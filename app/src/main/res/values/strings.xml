@@ -1,0 +1,7 @@
+<resources>
+    <string name="app_name">食刻</string>
+    <string name="title_home">食堂</string>
+    <string name="title_dashboard">档口</string>
+    <string name="title_notifications">论坛</string>
+    <string name="title_customization">我的</string>
+</resources>
