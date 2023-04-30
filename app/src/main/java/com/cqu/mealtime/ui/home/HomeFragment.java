@@ -61,6 +61,7 @@ public class HomeFragment extends Fragment {
     private String toastMsg;
     private FragmentHomeBinding binding;
     public static List<Canteen> canteens = new ArrayList<>();
+    public static boolean infoOpened = false;
     InfoWinAdapter infoWinAdapter;
     CanteenAdapter canteenAdapter;
     MapView mapView;
@@ -107,14 +108,20 @@ public class HomeFragment extends Fragment {
 //        // 向地图上添加 TileOverlayOptions 类对象
 //        aMap.addTileOverlay(tileOverlayOptions);
         aMap.setOnMapClickListener(latLng1 -> {
-            for (Marker marker : markers)
+            for (Marker marker : markers) {
                 marker.hideInfoWindow();
+                infoWinAdapter.stopPlayer();
+                infoOpened = false;
+            }
         });
         aMap.animateCamera(CameraUpdateFactory.newLatLngZoom(latLng, 16));
         ImageView btRst = binding.buttonReset;
         btRst.setOnClickListener(v -> {
-            for (Marker marker : markers)
+            for (Marker marker : markers) {
                 marker.hideInfoWindow();
+                infoWinAdapter.stopPlayer();
+                infoOpened = false;
+            }
             LatLng lt = aMap.getCameraPosition().target;
             long t = (long) (AMapUtils.calculateLineDistance(lt, latLng) / 2);
             t = t <= 1000 && t > 0 ? t : 500;
@@ -164,7 +171,7 @@ public class HomeFragment extends Fragment {
                     String response = doGet("http://140.210.194.87:8088/realtime", "");
                     JSONArray jsonArray = new JSONArray(response);
                     for (int i = 0; i < jsonArray.length(); i++)
-                        canteens.get(i).setFlow((int)(jsonArray.getDouble(i) / 6 * 100));
+                        canteens.get(i).setFlow((int) (jsonArray.getDouble(i) / 3 * 40));
                     Message msg = new Message();
                     msg.what = COMPLETED3;
                     handler.sendMessage(msg);
@@ -238,6 +245,8 @@ public class HomeFragment extends Fragment {
                 refresh();
             } else if (msg.what == COMPLETED3) {
                 realtimeUpdate();
+                if (infoOpened)
+                    infoWinAdapter.updateFlow();
             }
         }
     };

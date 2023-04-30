@@ -1,24 +1,18 @@
 package com.cqu.mealtime;
 
+import android.animation.ArgbEvaluator;
+import android.animation.ValueAnimator;
 import android.content.Context;
 import android.net.Uri;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.widget.ImageView;
-import android.widget.ProgressBar;
 import android.widget.TextView;
-import android.widget.Toast;
-import android.widget.VideoView;
-
-import androidx.annotation.NonNull;
 
 import com.amap.api.maps.AMap;
-import com.amap.api.maps.model.LatLng;
 import com.amap.api.maps.model.Marker;
 import com.cqu.mealtime.ui.home.HomeFragment;
 import com.google.android.exoplayer2.ExoPlayer;
 import com.google.android.exoplayer2.MediaItem;
-import com.google.android.exoplayer2.Player;
 import com.google.android.exoplayer2.ext.rtmp.RtmpDataSource;
 import com.google.android.exoplayer2.source.DefaultMediaSourceFactory;
 import com.google.android.exoplayer2.source.MediaSource;
@@ -28,22 +22,59 @@ import com.google.android.exoplayer2.ui.StyledPlayerView;
 public class InfoWinAdapter implements AMap.InfoWindowAdapter, View.OnClickListener {
     View infoWindow = null;
     private final Context mContext;
-
     ExoPlayer player;
-    Uri uri = Uri.parse("rtmp://1.14.46.81/live/canteen1");
+    TextView titleTXT;
+    TextView stateTXT;
+    TextView flowTXT;
+    TextView timeTXT;
+    int index = -1;
     RtmpDataSource.Factory dataSourceFactory = new RtmpDataSource.Factory();
-    MediaSource videoSource = new ProgressiveMediaSource.Factory(dataSourceFactory).createMediaSource(MediaItem.fromUri(uri));
+    ValueAnimator animator = ValueAnimator.ofInt(0, 0);
+    ValueAnimator animator2 = ValueAnimator.ofInt(0, 0);
 
     public InfoWinAdapter(Context context) {
         mContext = context;
-        player = new ExoPlayer.Builder(mContext).setMediaSourceFactory(new DefaultMediaSourceFactory(mContext).setLiveTargetOffsetMs(1000).setLiveMaxOffsetMs(3000).setLiveMaxSpeed(1.1f)).build();
+        animator.setDuration(300);
+        animator.addUpdateListener(valueAnimator -> flowTXT.setText(animator.getAnimatedValue().toString()));
+        animator2.setDuration(300);
+        animator2.setEvaluator(new ArgbEvaluator());
+        animator2.addUpdateListener(valueAnimator -> {
+            stateTXT.setTextColor((int) animator2.getAnimatedValue());
+            flowTXT.setTextColor((int) animator2.getAnimatedValue());
+        });
+        player = new ExoPlayer.Builder(mContext).setMediaSourceFactory(new DefaultMediaSourceFactory(mContext).setLiveTargetOffsetMs(1000).setLiveMaxOffsetMs(3000).setLiveMaxSpeed(1.5f)).build();
     }
 
     @Override
     public View getInfoWindow(Marker marker) {
-        if (infoWindow == null)
+        if (infoWindow == null) {
             infoWindow = LayoutInflater.from(mContext).inflate(R.layout.infowindow_card, null);
-        render(marker, infoWindow);
+            titleTXT = infoWindow.findViewById(R.id.location_name);
+            stateTXT = infoWindow.findViewById(R.id.location_state);
+            flowTXT = infoWindow.findViewById(R.id.location_flow);
+            timeTXT = infoWindow.findViewById(R.id.location_time);
+            //将显示控件绑定ExoPlayer
+            StyledPlayerView styledPlayerView = infoWindow.findViewById(R.id.playerView);
+            styledPlayerView.setPlayer(player);
+            player.setPlayWhenReady(true);
+        }
+        String temps = marker.getSnippet();
+        if (temps != null && Integer.parseInt(temps) != index) {
+            player.stop();
+            index = Integer.parseInt(temps);
+            titleTXT.setText(marker.getTitle());
+            stateTXT.setText(HomeFragment.canteens.get(index).getState());
+            stateTXT.setTextColor(HomeFragment.canteens.get(index).getColor());
+            flowTXT.setText(String.valueOf(HomeFragment.canteens.get(index).getFlow()));
+            flowTXT.setTextColor(HomeFragment.canteens.get(index).getColor());
+            timeTXT.setText("营业时间：" + HomeFragment.canteens.get(index).getTime());
+            Uri uri = Uri.parse(HomeFragment.canteens.get(index).getV_url());
+            MediaSource videoSource = new ProgressiveMediaSource.Factory(dataSourceFactory).createMediaSource(MediaItem.fromUri(uri));
+            player.setMediaSource(videoSource);
+        }
+        if (temps != null)
+            HomeFragment.infoOpened = true;
+        player.prepare();
         return infoWindow;
     }
 
@@ -63,31 +94,23 @@ public class InfoWinAdapter implements AMap.InfoWindowAdapter, View.OnClickListe
 //                break;
     }
 
-    public void render(Marker marker, View view) {
-        System.out.println("&&&&&&&&&&&&renderCall");
-        TextView titleTXT = view.findViewById(R.id.location_name);
-        TextView stateTXT = view.findViewById(R.id.location_state);
-        TextView flowTXT = view.findViewById(R.id.location_flow);
-        TextView timeTXT = view.findViewById(R.id.location_time);
-        //将显示控件绑定ExoPlayer
-        StyledPlayerView styledPlayerView = view.findViewById(R.id.playerView);
-        styledPlayerView.setPlayer(player);
-        player.setMediaSource(videoSource);
-        player.setPlayWhenReady(true);
-        player.prepare();
-        titleTXT.setText(marker.getTitle());
-        String temps = marker.getSnippet();
-        if (temps!=null){
-            int temp=Integer.parseInt(temps);
-            stateTXT.setText(HomeFragment.canteens.get(temp).getState());
-            stateTXT.setTextColor(HomeFragment.canteens.get(temp).getColor());
-            flowTXT.setText(String.valueOf(HomeFragment.canteens.get(temp).getFlow()));
-            flowTXT.setTextColor(HomeFragment.canteens.get(temp).getColor());
-            timeTXT.setText("营业时间：" + HomeFragment.canteens.get(temp).getTime());
-        }
-    }
 
     public void destroy() {
+        player.stop();
         player.release();
+    }
+
+    public void stopPlayer() {
+        player.stop();
+    }
+
+    public void updateFlow() {
+        if (stateTXT != null && flowTXT != null && index >= 0) {
+            animator.setIntValues(Integer.parseInt(flowTXT.getText().toString()), HomeFragment.canteens.get(index).getFlow());
+            animator.start();
+            animator2.setIntValues(stateTXT.getCurrentTextColor(), HomeFragment.canteens.get(index).getColor());
+            animator2.start();
+            stateTXT.setText(HomeFragment.canteens.get(index).getState());
+        }
     }
 }
