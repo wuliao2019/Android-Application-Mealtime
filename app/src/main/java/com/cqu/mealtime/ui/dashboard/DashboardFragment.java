@@ -40,6 +40,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Timer;
+import java.util.TimerTask;
 
 public class DashboardFragment extends Fragment {
     private FragmentDashboardBinding binding;
@@ -278,11 +280,6 @@ public class DashboardFragment extends Fragment {
         @Override
         public int getItemCount() {
             return stallsList.size();
-        }
-
-        public void setList(List<Stall> newList) {
-            this.stallsList = newList;
-            notifyDataSetChanged();
         }
 
         class Vh extends RecyclerView.ViewHolder {

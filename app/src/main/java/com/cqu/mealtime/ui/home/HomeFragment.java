@@ -45,15 +45,19 @@ import com.cqu.mealtime.R;
 import com.cqu.mealtime.databinding.FragmentHomeBinding;
 
 import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Timer;
+import java.util.TimerTask;
 
 public class HomeFragment extends Fragment {
 
     public static final int COMPLETED = -1;
     public static final int COMPLETED2 = -2;
+    public static final int COMPLETED3 = -3;
     private String toastMsg;
     private FragmentHomeBinding binding;
     public static List<Canteen> canteens = new ArrayList<>();
@@ -64,6 +68,8 @@ public class HomeFragment extends Fragment {
     List<Marker> markers = new ArrayList<>();
     List<WeightedLatLng> latLngs = new ArrayList<>();
     ProgressBar progressBar;
+    RecyclerView canteenList;
+    Timer timer;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -80,7 +86,7 @@ public class HomeFragment extends Fragment {
         binding = FragmentHomeBinding.inflate(inflater, container, false);
         View root = binding.getRoot();
         progressBar = binding.progressBar2;
-        if (canteens.size()==0)
+        if (canteens.size() == 0)
             progressBar.setVisibility(View.VISIBLE);
         mapView = binding.map;
         TextView title = binding.titleText;
@@ -124,7 +130,7 @@ public class HomeFragment extends Fragment {
                 }
             });
         });
-        RecyclerView canteenList = binding.canteenList;
+        canteenList = binding.canteenList;
         canteenList.setLayoutManager(new GridLayoutManager(getContext(), 2));
         canteenAdapter = new CanteenAdapter(getContext(), canteens);
         canteenAdapter.setOnItemClickListener(new CanteenAdapter.OnItemClickListener() {
@@ -151,6 +157,24 @@ public class HomeFragment extends Fragment {
         LayoutAnimationController layoutAnimationController = AnimationUtils.loadLayoutAnimation(getContext(), R.anim.list_anim);
         canteenList.setLayoutAnimation(layoutAnimationController);
         refresh();
+        TimerTask task = new TimerTask() {
+            @Override
+            public void run() {
+                try {
+                    String response = doGet("http://140.210.194.87:8088/realtime", "");
+                    JSONArray jsonArray = new JSONArray(response);
+                    for (int i = 0; i < jsonArray.length(); i++)
+                        canteens.get(i).setFlow((int)(jsonArray.getDouble(i) / 6 * 100));
+                    Message msg = new Message();
+                    msg.what = COMPLETED3;
+                    handler.sendMessage(msg);
+                } catch (JSONException e) {
+                    throw new RuntimeException(e);
+                }
+            }
+        };
+        timer = new Timer();
+        timer.schedule(task, 1000, 1000); // 立即执行一次task，然后每隔2秒执行一次task
         return root;
     }
 
@@ -159,6 +183,7 @@ public class HomeFragment extends Fragment {
         super.onDestroyView();
         binding = null;
         mapView.onDestroy();
+        timer.cancel();
         System.out.println("&&&&&&&&&&&&onDestroyView");
     }
 
@@ -211,20 +236,30 @@ public class HomeFragment extends Fragment {
                 Toast.makeText(getContext(), toastMsg, Toast.LENGTH_SHORT).show();
             } else if (msg.what == COMPLETED2) {
                 refresh();
+            } else if (msg.what == COMPLETED3) {
+                realtimeUpdate();
             }
         }
     };
 
     private void refresh() {
-        canteenAdapter.setList(canteens);
+        canteenAdapter.notifyDataSetChanged();
         aMap.clear();
         markers.clear();
         for (int i = 0; i < canteens.size(); i++) {
             markers.add(aMap.addMarker(new MarkerOptions().position(canteens.get(i).getLocation()).title(canteens.get(i).getName()).icon(BitmapDescriptorFactory.fromResource(R.drawable.meal)).snippet(String.valueOf(i))));
         }
         latLngs.clear();
-        for (int i=0;i<canteens.size();i++){
+        for (int i = 0; i < canteens.size(); i++) {
             latLngs.add(new WeightedLatLng(canteens.get(i).getLocation(), 2));
+        }
+        canteenList.startLayoutAnimation();
+    }
+
+    private void realtimeUpdate() {
+        for (int i = 0; i < canteens.size(); i++) {
+            canteenAdapter.notifyItemChanged(i, R.id.canteen_num);
+            canteenAdapter.notifyItemChanged(i, R.id.canteen_state);
         }
     }
 
@@ -276,11 +311,6 @@ public class HomeFragment extends Fragment {
         @Override
         public int getItemCount() {
             return canteensList.size();
-        }
-
-        public void setList(List<Canteen> newList) {
-            this.canteensList = newList;
-            notifyDataSetChanged();
         }
 
         static class Vh extends RecyclerView.ViewHolder {
