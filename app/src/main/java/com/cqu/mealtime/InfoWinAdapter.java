@@ -4,13 +4,21 @@ import android.animation.ArgbEvaluator;
 import android.animation.ValueAnimator;
 import android.content.Context;
 import android.net.Uri;
+import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.animation.Animation;
+import android.view.animation.AnticipateInterpolator;
+import android.view.animation.OvershootInterpolator;
+import android.view.animation.ScaleAnimation;
 import android.widget.TextView;
+
+import androidx.navigation.Navigation;
 
 import com.amap.api.maps.AMap;
 import com.amap.api.maps.model.Marker;
 import com.cqu.mealtime.ui.home.HomeFragment;
+import com.cqu.mealtime.util.UtilKt;
 import com.google.android.exoplayer2.ExoPlayer;
 import com.google.android.exoplayer2.MediaItem;
 import com.google.android.exoplayer2.ext.rtmp.RtmpDataSource;
@@ -27,10 +35,13 @@ public class InfoWinAdapter implements AMap.InfoWindowAdapter, View.OnClickListe
     TextView stateTXT;
     TextView flowTXT;
     TextView timeTXT;
+    ScaleAnimation scaleAnimation;
+    ScaleAnimation scaleAnimation2;
     int index = -1;
     RtmpDataSource.Factory dataSourceFactory = new RtmpDataSource.Factory();
     ValueAnimator animator = ValueAnimator.ofInt(0, 0);
     ValueAnimator animator2 = ValueAnimator.ofInt(0, 0);
+
 
     public InfoWinAdapter(Context context) {
         mContext = context;
@@ -42,6 +53,28 @@ public class InfoWinAdapter implements AMap.InfoWindowAdapter, View.OnClickListe
             stateTXT.setTextColor((int) animator2.getAnimatedValue());
             flowTXT.setTextColor((int) animator2.getAnimatedValue());
         });
+        scaleAnimation = new ScaleAnimation(0, 1, 0, 1, Animation.RELATIVE_TO_SELF, 0.5f, Animation.RELATIVE_TO_SELF, 1.0f);
+        scaleAnimation.setDuration(300);
+        scaleAnimation.setInterpolator(new OvershootInterpolator());
+        scaleAnimation2 = new ScaleAnimation(1, 0, 1, 0, Animation.RELATIVE_TO_SELF, 0.5f, Animation.RELATIVE_TO_SELF, 1.0f);
+        scaleAnimation2.setDuration(300);
+        scaleAnimation2.setInterpolator(new AnticipateInterpolator());
+        scaleAnimation2.setAnimationListener(new Animation.AnimationListener() {
+            @Override
+            public void onAnimationStart(Animation animation) {
+
+            }
+
+            @Override
+            public void onAnimationEnd(Animation animation) {
+                HomeFragment.closeInfo();
+            }
+
+            @Override
+            public void onAnimationRepeat(Animation animation) {
+
+            }
+        });
         player = new ExoPlayer.Builder(mContext).setMediaSourceFactory(new DefaultMediaSourceFactory(mContext).setLiveTargetOffsetMs(1000).setLiveMaxOffsetMs(3000).setLiveMaxSpeed(1.5f)).build();
     }
 
@@ -49,6 +82,13 @@ public class InfoWinAdapter implements AMap.InfoWindowAdapter, View.OnClickListe
     public View getInfoWindow(Marker marker) {
         if (infoWindow == null) {
             infoWindow = LayoutInflater.from(mContext).inflate(R.layout.infowindow_card, null);
+            infoWindow.setOnClickListener(v -> {
+                Bundle bundle = new Bundle();
+                if (index >= 0)
+                    bundle.putInt("CanteenIndex", index + 1);
+                Navigation.findNavController(infoWindow).navigate(R.id.action_navigation_home_to_navigation_dashboard, bundle);
+            });
+            UtilKt.addClickScale(infoWindow, 0.9f, 150);
             titleTXT = infoWindow.findViewById(R.id.location_name);
             stateTXT = infoWindow.findViewById(R.id.location_state);
             flowTXT = infoWindow.findViewById(R.id.location_flow);
@@ -59,22 +99,25 @@ public class InfoWinAdapter implements AMap.InfoWindowAdapter, View.OnClickListe
             player.setPlayWhenReady(true);
         }
         String temps = marker.getSnippet();
-        if (temps != null && Integer.parseInt(temps) != index) {
-            player.stop();
-            index = Integer.parseInt(temps);
-            titleTXT.setText(marker.getTitle());
-            stateTXT.setText(HomeFragment.canteens.get(index).getState());
-            stateTXT.setTextColor(HomeFragment.canteens.get(index).getColor());
-            flowTXT.setText(String.valueOf(HomeFragment.canteens.get(index).getFlow()));
-            flowTXT.setTextColor(HomeFragment.canteens.get(index).getColor());
-            timeTXT.setText("营业时间：" + HomeFragment.canteens.get(index).getTime());
-            Uri uri = Uri.parse(HomeFragment.canteens.get(index).getV_url());
-            MediaSource videoSource = new ProgressiveMediaSource.Factory(dataSourceFactory).createMediaSource(MediaItem.fromUri(uri));
-            player.setMediaSource(videoSource);
-        }
-        if (temps != null)
+        if (temps != null) {
+            if (Integer.parseInt(temps) != index) {
+                player.stop();
+                index = Integer.parseInt(temps);
+                titleTXT.setText(marker.getTitle());
+                stateTXT.setText(HomeFragment.canteens.get(index).getState());
+                stateTXT.setTextColor(HomeFragment.canteens.get(index).getColor());
+                flowTXT.setText(String.valueOf(HomeFragment.canteens.get(index).getFlow()));
+                flowTXT.setTextColor(HomeFragment.canteens.get(index).getColor());
+                timeTXT.setText("营业时间：" + HomeFragment.canteens.get(index).getTime());
+                Uri uri = Uri.parse(HomeFragment.canteens.get(index).getV_url());
+                MediaSource videoSource = new ProgressiveMediaSource.Factory(dataSourceFactory).createMediaSource(MediaItem.fromUri(uri));
+                player.setMediaSource(videoSource);
+                infoWindow.startAnimation(scaleAnimation);
+            } else if (!HomeFragment.infoOpened)
+                infoWindow.startAnimation(scaleAnimation);
             HomeFragment.infoOpened = true;
-        player.prepare();
+            player.prepare();
+        }
         return infoWindow;
     }
 
@@ -112,5 +155,10 @@ public class InfoWinAdapter implements AMap.InfoWindowAdapter, View.OnClickListe
             animator2.start();
             stateTXT.setText(HomeFragment.canteens.get(index).getState());
         }
+    }
+
+    public void hideInfo() {
+        if (HomeFragment.infoOpened)
+            infoWindow.startAnimation(scaleAnimation2);
     }
 }

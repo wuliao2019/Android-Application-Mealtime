@@ -8,6 +8,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
 import android.os.Message;
+import android.util.Log;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -32,6 +33,7 @@ import com.bigkoo.pickerview.view.OptionsPickerView;
 import com.cqu.mealtime.R;
 import com.cqu.mealtime.Stall;
 import com.cqu.mealtime.databinding.FragmentDashboardBinding;
+import com.cqu.mealtime.util.UtilKt;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -64,6 +66,8 @@ public class DashboardFragment extends Fragment {
     private int limit_loc = 0;
 
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        assert getArguments() != null;
+        limit_can = getArguments().getInt("CanteenIndex");
         binding = FragmentDashboardBinding.inflate(inflater, container, false);
         View root = binding.getRoot();
         bt1 = binding.buttonCanteen;
@@ -103,16 +107,25 @@ public class DashboardFragment extends Fragment {
             limit_loc = DashboardData.locId.get(options1).get(options2);
             new Thread(this::queryStalls).start();
         }).build();
+        DashboardData.stalls.clear();
         stallAdapter = new StallAdapter(getContext(), DashboardData.stalls);
+        stallAdapter.setOnItemClickListener(new StallAdapter.OnItemClickListener() {
+            @Override
+            public void onClick(int position, View v) {
+
+            }
+
+            @Override
+            public void onLongClick(int position, View v) {
+
+            }
+        });
         stallList.setAdapter(stallAdapter);
-        if (DashboardData.canteens.size() == 0)
-            new Thread(() -> {
-                System.out.println("开始获取列表");
-                queryList();
-                queryStalls();
-            }).start();
-        else
-            initLimit();
+        new Thread(() -> {
+            System.out.println("开始获取列表");
+            queryList();
+            queryStalls();
+        }).start();
         return root;
     }
 
@@ -223,6 +236,7 @@ public class DashboardFragment extends Fragment {
         bt1.setOnClickListener(v -> pvOptions12.show());
         bt2.setOnClickListener(v -> pvOptions12.show());
         bt3.setOnClickListener(v -> pvOptions3.show());
+        bt1.setText(DashboardData.canteens.get(limit_can));
     }
 
     private void refresh() {
@@ -251,15 +265,17 @@ public class DashboardFragment extends Fragment {
         public void onBindViewHolder(StallAdapter.Vh holder, final int position) {
             holder.itemName.setText(stallsList.get(position).getName());
             holder.itemId.setText("#" + stallsList.get(position).getId());
+            holder.itemType.setText(DashboardData.types.get(stallsList.get(position).getType()));
+            holder.itemTypeBack.setCardBackgroundColor(DashboardData.backColors.get(stallsList.get(position).getType() - 1));
             holder.itemLocation.setText(DashboardData.canteens.get(stallsList.get(position).getLocation1()) + "·" + DashboardData.locations.get(0).get(stallsList.get(position).getLocation2()));
             if (stallsList.get(position).getName().length() > 7)
                 holder.itemName.setTextSize(14);
             else
                 holder.itemName.setTextSize(16);
             if (mOnItemClickListener != null) {
-                holder.itemView.setOnClickListener(v -> mOnItemClickListener.onClick(holder.getAdapterPosition(), v));
+                holder.itemView.setOnClickListener(v -> mOnItemClickListener.onClick(position, v));
                 holder.itemView.setOnLongClickListener(v -> {
-                    mOnItemClickListener.onLongClick(holder.getAdapterPosition(), v);
+                    mOnItemClickListener.onLongClick(position, v);
                     return true;
                 });
             }
@@ -286,13 +302,18 @@ public class DashboardFragment extends Fragment {
             private final TextView itemName;
             private final TextView itemId;
             private final TextView itemLocation;
+            private final TextView itemType;
+            private final CardView itemTypeBack;
 //            private final TextView itemTime;
 
             public Vh(View itemView) {
                 super(itemView);
+                UtilKt.addClickScale(itemView, 0.9f, 150);
                 itemName = itemView.findViewById(R.id.card_name);
                 itemId = itemView.findViewById(R.id.card_id);
                 itemLocation = itemView.findViewById(R.id.card_location);
+                itemType = itemView.findViewById(R.id.card_type);
+                itemTypeBack = itemView.findViewById(R.id.card_type_back);
 //                itemTime = itemView.findViewById(R.id.canteen_time);
             }
         }

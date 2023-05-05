@@ -65,22 +65,26 @@ public class Canteen {
     }
 
     public int getColor() {
-        if (flow < 250)
-            return 0xff206420;
-        else if (flow < 500)
-            return 0xff20a020;
-        else if (flow < 750)
-            return 0xffd2d200;
+        if (flow < 200)
+            return 0xff048444;
+        else if (flow < 400)
+            return 0xff04E474;
+        else if (flow < 600)
+            return 0xffFCCC64;
+        else  if (flow < 800)
+            return 0xFFFC7C1C;
         else
-            return 0xffc82020;
+            return 0xFFE4192B;
     }
 
     public String getState() {
-        if (flow < 250)
+        if (flow < 200)
             return "空闲";
-        else if (flow < 500)
+        else if (flow < 400)
             return "流量正常";
-        else if (flow < 750)
+        else if (flow < 600)
+            return "流量一般";
+        else if (flow < 800)
             return "流量较大";
         else
             return "拥挤";

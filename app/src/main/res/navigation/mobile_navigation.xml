@@ -8,13 +8,30 @@
         android:id="@+id/navigation_home"
         android:name="com.cqu.mealtime.ui.home.HomeFragment"
         android:label="@string/title_home"
-        tools:layout="@layout/fragment_home" />
+        tools:layout="@layout/fragment_home" >
+        <action
+            android:id="@+id/action_navigation_home_to_navigation_dashboard"
+            app:destination="@id/navigation_dashboard"
+            app:enterAnim="@anim/nav_default_enter_anim"
+            app:exitAnim="@anim/nav_default_exit_anim"
+            app:launchSingleTop="true"
+            app:popEnterAnim="@anim/nav_default_pop_enter_anim"
+            app:popExitAnim="@anim/nav_default_pop_exit_anim"
+            app:popUpTo="@id/navigation_home"
+            app:popUpToInclusive="false"
+            app:popUpToSaveState="true" />
+    </fragment>
 
     <fragment
         android:id="@+id/navigation_dashboard"
         android:name="com.cqu.mealtime.ui.dashboard.DashboardFragment"
         android:label="@string/title_dashboard"
-        tools:layout="@layout/fragment_dashboard" />
+        tools:layout="@layout/fragment_dashboard" >
+        <argument
+            android:name="CanteenIndex"
+            app:argType="integer"
+            android:defaultValue="0" />
+    </fragment>
 
     <fragment
         android:id="@+id/navigation_notifications"
@@ -26,5 +43,5 @@
         android:id="@+id/navigation_customization"
         android:name="com.cqu.mealtime.ui.customization.CustomizationFragment"
         android:label="@string/title_customization"
-        tools:layout="@layout/fragment_notifications" />
+        tools:layout="@layout/fragment_customization" />
 </navigation>

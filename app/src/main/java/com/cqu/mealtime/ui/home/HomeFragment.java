@@ -1,7 +1,6 @@
 package com.cqu.mealtime.ui.home;
 
 import static com.cqu.mealtime.util.RequestUtil.doGet;
-import static com.cqu.mealtime.util.RequestUtil.urlEncode;
 
 import android.content.Context;
 import android.content.res.AssetManager;
@@ -23,6 +22,7 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.navigation.Navigation;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -43,6 +43,7 @@ import com.cqu.mealtime.Canteen;
 import com.cqu.mealtime.InfoWinAdapter;
 import com.cqu.mealtime.R;
 import com.cqu.mealtime.databinding.FragmentHomeBinding;
+import com.cqu.mealtime.util.UtilKt;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -50,6 +51,7 @@ import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -62,11 +64,11 @@ public class HomeFragment extends Fragment {
     private FragmentHomeBinding binding;
     public static List<Canteen> canteens = new ArrayList<>();
     public static boolean infoOpened = false;
-    InfoWinAdapter infoWinAdapter;
+    static InfoWinAdapter infoWinAdapter;
     CanteenAdapter canteenAdapter;
     MapView mapView;
     AMap aMap;
-    List<Marker> markers = new ArrayList<>();
+    static List<Marker> markers = new ArrayList<>();
     List<WeightedLatLng> latLngs = new ArrayList<>();
     ProgressBar progressBar;
     RecyclerView canteenList;
@@ -108,22 +110,16 @@ public class HomeFragment extends Fragment {
 //        // 向地图上添加 TileOverlayOptions 类对象
 //        aMap.addTileOverlay(tileOverlayOptions);
         aMap.setOnMapClickListener(latLng1 -> {
-            for (Marker marker : markers) {
-                marker.hideInfoWindow();
-                infoWinAdapter.stopPlayer();
-                infoOpened = false;
-            }
+            infoWinAdapter.hideInfo();
         });
         aMap.animateCamera(CameraUpdateFactory.newLatLngZoom(latLng, 16));
         ImageView btRst = binding.buttonReset;
+        ImageView btEdit = binding.buttonEdit;
+        ImageView btPhoto = binding.buttonPhoto;
         btRst.setOnClickListener(v -> {
-            for (Marker marker : markers) {
-                marker.hideInfoWindow();
-                infoWinAdapter.stopPlayer();
-                infoOpened = false;
-            }
+            infoWinAdapter.hideInfo();
             LatLng lt = aMap.getCameraPosition().target;
-            long t = (long) (AMapUtils.calculateLineDistance(lt, latLng) / 2);
+            long t = (long) (AMapUtils.calculateLineDistance(lt, latLng));
             t = t <= 1000 && t > 0 ? t : 500;
             aMap.animateCamera(CameraUpdateFactory.newCameraPosition(new CameraPosition(latLng, 16, 0, 0)), t, new AMap.CancelableCallback() {
                 @Override
@@ -137,6 +133,13 @@ public class HomeFragment extends Fragment {
                 }
             });
         });
+        btEdit.setOnClickListener(v -> {
+        });
+        btPhoto.setOnClickListener(v -> {
+        });
+        UtilKt.addClickScale(btRst, 0.8f, 100);
+        UtilKt.addClickScale(btEdit, 0.8f, 100);
+        UtilKt.addClickScale(btPhoto, 0.8f, 100);
         canteenList = binding.canteenList;
         canteenList.setLayoutManager(new GridLayoutManager(getContext(), 2));
         canteenAdapter = new CanteenAdapter(getContext(), canteens);
@@ -169,17 +172,22 @@ public class HomeFragment extends Fragment {
             public void run() {
                 try {
                     String response = doGet("http://140.210.194.87:8088/realtime", "");
-                    JSONArray jsonArray = new JSONArray(response);
-                    for (int i = 0; i < jsonArray.length(); i++)
-                        canteens.get(i).setFlow((int) (jsonArray.getDouble(i) / 3 * 40));
-                    Message msg = new Message();
-                    msg.what = COMPLETED3;
-                    handler.sendMessage(msg);
+                    if (response != null && !canteens.isEmpty()) {
+                        JSONArray jsonArray = new JSONArray(response);
+                        for (int i = 0; i < jsonArray.length(); i++)
+                            canteens.get(i).setFlow((int) (jsonArray.getDouble(i) / 3 * 40));
+                        Message msg = new Message();
+                        msg.what = COMPLETED3;
+                        handler.sendMessage(msg);
+                    }
                 } catch (JSONException e) {
                     throw new RuntimeException(e);
                 }
             }
         };
+//        AMap.OnInfoWindowClickListener listener = marker -> Navigation.findNavController(requireActivity(), R.id.nav_host_fragment_activity_main).navigate(R.id.action_navigation_home_to_navigation_dashboard);
+//绑定信息窗点击事件
+//        aMap.setOnInfoWindowClickListener(listener);
         timer = new Timer();
         timer.schedule(task, 1000, 1000); // 立即执行一次task，然后每隔2秒执行一次task
         return root;
@@ -272,6 +280,14 @@ public class HomeFragment extends Fragment {
         }
     }
 
+    static public void closeInfo() {
+        for (Marker marker : markers) {
+            marker.hideInfoWindow();
+            infoWinAdapter.stopPlayer();
+            infoOpened = false;
+        }
+    }
+
     static class CanteenAdapter extends RecyclerView.Adapter<CanteenAdapter.Vh> {
         private final Context context;
         public List<Canteen> canteensList;
@@ -297,9 +313,9 @@ public class HomeFragment extends Fragment {
             holder.itemNum.setTextColor(canteensList.get(position).getColor());
 
             if (mOnItemClickListener != null) {
-                holder.itemView.setOnClickListener(v -> mOnItemClickListener.onClick(holder.getAdapterPosition(), v));
+                holder.itemView.setOnClickListener(v -> mOnItemClickListener.onClick(position, v));
                 holder.itemView.setOnLongClickListener(v -> {
-                    mOnItemClickListener.onLongClick(holder.getAdapterPosition(), v);
+                    mOnItemClickListener.onLongClick(position, v);
                     return true;
                 });
             }
@@ -330,6 +346,7 @@ public class HomeFragment extends Fragment {
 
             public Vh(View itemView) {
                 super(itemView);
+                UtilKt.addClickScale(itemView, 0.9f, 150);
                 itemName = itemView.findViewById(R.id.canteen_name);
                 itemState = itemView.findViewById(R.id.canteen_state);
                 itemNum = itemView.findViewById(R.id.canteen_num);
