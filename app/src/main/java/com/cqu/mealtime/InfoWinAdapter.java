@@ -42,8 +42,10 @@ public class InfoWinAdapter implements AMap.InfoWindowAdapter, View.OnClickListe
     ValueAnimator animator = ValueAnimator.ofInt(0, 0);
     ValueAnimator animator2 = ValueAnimator.ofInt(0, 0);
 
+    HomeFragment home;
 
-    public InfoWinAdapter(Context context) {
+    public InfoWinAdapter(Context context,HomeFragment home) {
+        this.home=home;
         mContext = context;
         animator.setDuration(300);
         animator.addUpdateListener(valueAnimator -> flowTXT.setText(animator.getAnimatedValue().toString()));
@@ -67,7 +69,7 @@ public class InfoWinAdapter implements AMap.InfoWindowAdapter, View.OnClickListe
 
             @Override
             public void onAnimationEnd(Animation animation) {
-                HomeFragment.closeInfo();
+                home.closeInfo();
             }
 
             @Override

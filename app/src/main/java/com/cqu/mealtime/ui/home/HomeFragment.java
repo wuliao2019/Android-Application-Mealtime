@@ -22,7 +22,6 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
-import androidx.navigation.Navigation;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -37,6 +36,7 @@ import com.amap.api.maps.model.HeatmapTileProvider;
 import com.amap.api.maps.model.LatLng;
 import com.amap.api.maps.model.Marker;
 import com.amap.api.maps.model.MarkerOptions;
+import com.amap.api.maps.model.TileOverlay;
 import com.amap.api.maps.model.TileOverlayOptions;
 import com.amap.api.maps.model.WeightedLatLng;
 import com.cqu.mealtime.Canteen;
@@ -51,7 +51,6 @@ import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -64,7 +63,7 @@ public class HomeFragment extends Fragment {
     private FragmentHomeBinding binding;
     public static List<Canteen> canteens = new ArrayList<>();
     public static boolean infoOpened = false;
-    static InfoWinAdapter infoWinAdapter;
+    InfoWinAdapter infoWinAdapter;
     CanteenAdapter canteenAdapter;
     MapView mapView;
     AMap aMap;
@@ -73,13 +72,14 @@ public class HomeFragment extends Fragment {
     ProgressBar progressBar;
     RecyclerView canteenList;
     Timer timer;
+    TileOverlay tileOverlay;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         System.out.println("&&&&&&&&&&&&onCreate");
         new Thread(this::queryCanteens).start();
-        infoWinAdapter = new InfoWinAdapter(getContext());
+        infoWinAdapter = new InfoWinAdapter(getContext(), this);
     }
 
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -101,17 +101,8 @@ public class HomeFragment extends Fragment {
         aMap.setPointToCenter(540, 800);
         aMap.setInfoWindowAdapter(infoWinAdapter);
         LatLng latLng = new LatLng(29.593, 106.298);
-//        HeatmapTileProvider.Builder builder = new HeatmapTileProvider.Builder();
-//        builder.weightedData(latLngs).radius(50);
-//        HeatmapTileProvider heatmapTileProvider = builder.build();
-//        // 初始化 TileOverlayOptions
-//        TileOverlayOptions tileOverlayOptions = new TileOverlayOptions();
-//        tileOverlayOptions.tileProvider(heatmapTileProvider); // 设置瓦片图层的提供者
-//        // 向地图上添加 TileOverlayOptions 类对象
-//        aMap.addTileOverlay(tileOverlayOptions);
-        aMap.setOnMapClickListener(latLng1 -> {
-            infoWinAdapter.hideInfo();
-        });
+
+        aMap.setOnMapClickListener(latLng1 -> infoWinAdapter.hideInfo());
         aMap.animateCamera(CameraUpdateFactory.newLatLngZoom(latLng, 16));
         ImageView btRst = binding.buttonReset;
         ImageView btEdit = binding.buttonEdit;
@@ -199,6 +190,7 @@ public class HomeFragment extends Fragment {
         binding = null;
         mapView.onDestroy();
         timer.cancel();
+        tileOverlay = null;
         System.out.println("&&&&&&&&&&&&onDestroyView");
     }
 
@@ -227,6 +219,10 @@ public class HomeFragment extends Fragment {
             for (int i = 0; i < jsonArray.length(); i++) {
                 jsonObject = jsonArray.getJSONObject(i);
                 canteens.add(new Canteen(jsonObject.getString("canteenName"), jsonObject.getInt("canteenId"), jsonObject.getDouble("canteenLatitude"), jsonObject.getDouble("canteenLongitude"), jsonObject.getString("canteenHours"), jsonObject.getString("videoUrl")));
+            }
+            latLngs.clear();
+            for (int i = 0; i < canteens.size(); i++) {
+                latLngs.add(new WeightedLatLng(canteens.get(i).getLocation()));
             }
             toastMsg = "获取食堂信息成功";
             Message msg = new Message();
@@ -266,10 +262,6 @@ public class HomeFragment extends Fragment {
         for (int i = 0; i < canteens.size(); i++) {
             markers.add(aMap.addMarker(new MarkerOptions().position(canteens.get(i).getLocation()).title(canteens.get(i).getName()).icon(BitmapDescriptorFactory.fromResource(R.drawable.meal)).snippet(String.valueOf(i))));
         }
-        latLngs.clear();
-        for (int i = 0; i < canteens.size(); i++) {
-            latLngs.add(new WeightedLatLng(canteens.get(i).getLocation(), 2));
-        }
         canteenList.startLayoutAnimation();
     }
 
@@ -278,9 +270,25 @@ public class HomeFragment extends Fragment {
             canteenAdapter.notifyItemChanged(i, R.id.canteen_num);
             canteenAdapter.notifyItemChanged(i, R.id.canteen_state);
         }
+        for (int i = 0; i < canteens.size(); i++) {
+            latLngs.set(i, new WeightedLatLng(canteens.get(i).getLocation(), 1 + (double) canteens.get(i).getFlow() / 200));
+        }
+        if (!latLngs.isEmpty() && tileOverlay == null) {
+            HeatmapTileProvider.Builder builder = new HeatmapTileProvider.Builder();
+            builder.weightedData(latLngs).radius(50);
+            HeatmapTileProvider heatmapTileProvider = builder.build();
+            // 初始化 TileOverlayOptions
+            TileOverlayOptions tileOverlayOptions = new TileOverlayOptions();
+            tileOverlayOptions.tileProvider(heatmapTileProvider); // 设置瓦片图层的提供者
+            // 向地图上添加 TileOverlayOptions 类对象
+            tileOverlay = aMap.addTileOverlay(tileOverlayOptions);
+//            if (tileOverlay != null)
+//                tileOverlay.remove();
+//            tileOverlay = t;
+        }
     }
 
-    static public void closeInfo() {
+    public void closeInfo() {
         for (Marker marker : markers) {
             marker.hideInfoWindow();
             infoWinAdapter.stopPlayer();

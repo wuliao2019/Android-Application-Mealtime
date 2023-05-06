@@ -8,7 +8,6 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
 import android.os.Message;
-import android.util.Log;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -19,7 +18,6 @@ import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -33,17 +31,13 @@ import com.bigkoo.pickerview.view.OptionsPickerView;
 import com.cqu.mealtime.R;
 import com.cqu.mealtime.Stall;
 import com.cqu.mealtime.databinding.FragmentDashboardBinding;
-import com.cqu.mealtime.util.UtilKt;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
-import java.util.Timer;
-import java.util.TimerTask;
 
 public class DashboardFragment extends Fragment {
     private FragmentDashboardBinding binding;
@@ -78,7 +72,7 @@ public class DashboardFragment extends Fragment {
         btSearch.setOnClickListener(v -> new Thread(this::queryStalls).start());
         editText.setImeOptions(EditorInfo.IME_ACTION_SEARCH);
         editText.setOnEditorActionListener((textView, i, keyEvent) -> {
-            if (!editText.getText().toString().equals("") && (i == EditorInfo.IME_ACTION_SEARCH || keyEvent != null && keyEvent.getKeyCode() == KeyEvent.KEYCODE_ENTER)) {
+            if (i == EditorInfo.IME_ACTION_SEARCH || keyEvent != null && keyEvent.getKeyCode() == KeyEvent.KEYCODE_ENTER) {
                 btSearch.callOnClick();
                 return false;
             }
@@ -244,78 +238,5 @@ public class DashboardFragment extends Fragment {
             editText.clearFocus();
         stallAdapter.notifyDataSetChanged();
         stallList.startLayoutAnimation();
-    }
-
-    static class StallAdapter extends RecyclerView.Adapter<StallAdapter.Vh> {
-        private final Context context;
-        public List<Stall> stallsList;
-
-        public StallAdapter(Context context, List<Stall> stallsList) {
-            this.context = context;
-            this.stallsList = stallsList;
-        }
-
-        @NonNull
-        @Override
-        public StallAdapter.Vh onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-            return new StallAdapter.Vh(LayoutInflater.from(context).inflate(R.layout.stall_card, null));
-        }
-
-        @Override
-        public void onBindViewHolder(StallAdapter.Vh holder, final int position) {
-            holder.itemName.setText(stallsList.get(position).getName());
-            holder.itemId.setText("#" + stallsList.get(position).getId());
-            holder.itemType.setText(DashboardData.types.get(stallsList.get(position).getType()));
-            holder.itemTypeBack.setCardBackgroundColor(DashboardData.backColors.get(stallsList.get(position).getType() - 1));
-            holder.itemLocation.setText(DashboardData.canteens.get(stallsList.get(position).getLocation1()) + "·" + DashboardData.locations.get(0).get(stallsList.get(position).getLocation2()));
-            if (stallsList.get(position).getName().length() > 7)
-                holder.itemName.setTextSize(14);
-            else
-                holder.itemName.setTextSize(16);
-            if (mOnItemClickListener != null) {
-                holder.itemView.setOnClickListener(v -> mOnItemClickListener.onClick(position, v));
-                holder.itemView.setOnLongClickListener(v -> {
-                    mOnItemClickListener.onLongClick(position, v);
-                    return true;
-                });
-            }
-        }
-
-        public interface OnItemClickListener {
-            void onClick(int position, View v);
-
-            void onLongClick(int position, View v);
-        }
-
-        private StallAdapter.OnItemClickListener mOnItemClickListener;
-
-        public void setOnItemClickListener(StallAdapter.OnItemClickListener onItemClickListener) {
-            this.mOnItemClickListener = onItemClickListener;
-        }
-
-        @Override
-        public int getItemCount() {
-            return stallsList.size();
-        }
-
-        class Vh extends RecyclerView.ViewHolder {
-            private final TextView itemName;
-            private final TextView itemId;
-            private final TextView itemLocation;
-            private final TextView itemType;
-            private final CardView itemTypeBack;
-//            private final TextView itemTime;
-
-            public Vh(View itemView) {
-                super(itemView);
-                UtilKt.addClickScale(itemView, 0.9f, 150);
-                itemName = itemView.findViewById(R.id.card_name);
-                itemId = itemView.findViewById(R.id.card_id);
-                itemLocation = itemView.findViewById(R.id.card_location);
-                itemType = itemView.findViewById(R.id.card_type);
-                itemTypeBack = itemView.findViewById(R.id.card_type_back);
-//                itemTime = itemView.findViewById(R.id.canteen_time);
-            }
-        }
     }
 }

@@ -38,10 +38,10 @@ public class CustomizationFragment extends Fragment {
 
         binding = FragmentCustomizationBinding.inflate(inflater, container, false);
         View root = binding.getRoot();
-        ImageButton imageView = binding.imageButton;
-        Button button = binding.button;
-        imageView.setAnimation(scaleAnimation);
-        button.setOnClickListener(v -> imageView.startAnimation(scaleAnimation));
+//        ImageButton imageView = binding.imageButton;
+//        Button button = binding.button;
+//        imageView.setAnimation(scaleAnimation);
+//        button.setOnClickListener(v -> imageView.startAnimation(scaleAnimation));
 //        final TextView textView = binding.textCustomization;
 //        notificationsViewModel.getText().observe(getViewLifecycleOwner(), textView::setText);
         return root;
