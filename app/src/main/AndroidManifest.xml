@@ -57,6 +57,7 @@
                 android:name="android.app.lib_name"
                 android:value="" />
         </activity>
+        <activity android:name=".CommentActivity" />
         <meta-data
             android:name="com.amap.api.v2.apikey"
             android:value="b30b2af5687450c25facd1ddda2662fa"/>

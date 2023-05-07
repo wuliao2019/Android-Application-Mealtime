@@ -9,7 +9,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_margin="6dp"
-        app:cardBackgroundColor="#F5F5F5"
+        app:cardBackgroundColor="@color/stall_card"
         app:cardCornerRadius="10dp"
         app:cardElevation="0dp"
         app:cardMaxElevation="0dp"
@@ -37,12 +37,12 @@
                 android:id="@+id/card_name"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="4dp"
+                android:layout_marginStart="32dp"
                 android:layout_marginTop="8dp"
                 android:text="粤式烧腊"
-                android:textColor="#000000"
+                android:textColor="@color/main_text"
                 android:textSize="16sp"
-                app:layout_constraintStart_toEndOf="@+id/card_id"
+                app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
 
             <TextView

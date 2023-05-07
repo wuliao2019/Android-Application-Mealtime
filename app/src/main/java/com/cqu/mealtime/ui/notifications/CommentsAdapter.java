@@ -11,6 +11,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.cqu.mealtime.Comment;
 import com.cqu.mealtime.R;
+import com.cqu.mealtime.util.UtilKt;
 
 import java.util.List;
 
@@ -28,6 +29,16 @@ public class CommentsAdapter extends RecyclerView.Adapter<CommentsAdapter.ViewHo
         this.stalls = stalls;
     }
 
+    public interface OnItemClickListener {
+        void onClick(int position, View v);
+    }
+
+    private OnItemClickListener mOnItemClickListener;
+
+    public void setOnItemClickListener(OnItemClickListener onItemClickListener) {
+        this.mOnItemClickListener = onItemClickListener;
+    }
+
     @NonNull
     @Override
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
@@ -41,14 +52,17 @@ public class CommentsAdapter extends RecyclerView.Adapter<CommentsAdapter.ViewHo
         TextView commentStall;
         TextView commentTime;
         TextView commentUser;
+        View divider;
 
         public ViewHolder(View view) {
             super(view);
-            commentTitle = view.findViewById(R.id.comment_title);
-            commentRemark = view.findViewById(R.id.comment_remark);
-            commentStall = view.findViewById(R.id.comment_stall);
-            commentTime = view.findViewById(R.id.comment_time);
-            commentUser = view.findViewById(R.id.user_name);
+            UtilKt.addClickScale(view, 0.9f, 100);
+            commentTitle = view.findViewById(R.id.comment_title2);
+            commentRemark = view.findViewById(R.id.comment_remark2);
+            commentStall = view.findViewById(R.id.comment_stall2);
+            commentTime = view.findViewById(R.id.comment_time2);
+            commentUser = view.findViewById(R.id.user_name2);
+            divider = view.findViewById(R.id.divider);
         }
 
     }
@@ -59,7 +73,7 @@ public class CommentsAdapter extends RecyclerView.Adapter<CommentsAdapter.ViewHo
         holder.commentTitle.setText(comment.getTitle());
         holder.commentRemark.setText(comment.getRemark());
         holder.commentTime.setText(comment.getTime());
-        holder.commentUser.setText("来自："+comment.getUsername());
+        holder.commentUser.setText("来自：" + comment.getUsername());
         holder.commentStall.setVisibility(View.VISIBLE);
         if (comment.getCan_id() == 0 && comment.getStall_id() == 0)
             holder.commentStall.setVisibility(View.GONE);
@@ -67,6 +81,15 @@ public class CommentsAdapter extends RecyclerView.Adapter<CommentsAdapter.ViewHo
             holder.commentStall.setText(canteens.get(comment.getCan_id()));
         else
             holder.commentStall.setText(canteens.get(comment.getCan_id()) + " · " + stalls.get(comment.getStall_id()));
+        if (comment.getRemark().length() == 0) {
+            holder.commentRemark.setVisibility(View.GONE);
+            holder.divider.setVisibility(View.GONE);
+        } else {
+            holder.commentRemark.setVisibility(View.VISIBLE);
+            holder.divider.setVisibility(View.VISIBLE);
+        }
+        if (mOnItemClickListener != null)
+            holder.itemView.setOnClickListener(v -> mOnItemClickListener.onClick(position, v));
     }
 
     @Override

@@ -24,7 +24,7 @@
             android:layout_marginTop="2dp"
             android:layout_marginBottom="2dp"
             android:text="食刻"
-            android:textColor="#000000"
+            android:textColor="@color/main_text"
             android:textSize="26sp"
             android:textStyle="bold"
             app:layout_constraintBottom_toBottomOf="parent"
@@ -40,7 +40,8 @@
             android:src="@drawable/camera_goto_preset"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toStartOf="@+id/button_edit"
-            app:layout_constraintTop_toTopOf="parent" />
+            app:layout_constraintTop_toTopOf="parent"
+            app:tint="@color/main_text" />
 
         <ImageView
             android:id="@+id/button_edit"
@@ -51,7 +52,8 @@
             android:src="@drawable/edit"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toStartOf="@+id/button_photo"
-            app:layout_constraintTop_toTopOf="parent" />
+            app:layout_constraintTop_toTopOf="parent"
+            app:tint="@color/main_text" />
 
         <ImageView
             android:id="@+id/button_photo"
@@ -62,7 +64,8 @@
             android:src="@drawable/camera"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+            app:layout_constraintTop_toTopOf="parent"
+            app:tint="@color/main_text" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 
     <com.amap.api.maps.MapView
@@ -82,7 +85,7 @@
         android:maxHeight="300dp"
         android:minHeight="200dp"
         android:paddingBottom="100dp"
-        app:cardBackgroundColor="#CCFFFFFF"
+        app:cardBackgroundColor="@color/card_back"
         app:cardCornerRadius="30dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"

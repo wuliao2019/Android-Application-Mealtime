@@ -8,14 +8,14 @@
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
     <color name="main_yellow">#FFF4C434</color>
-    <color name="main_text">#FF000000</color>
-    <color name="comment_back">#FFE4E4E4</color>
-    <color name="float_button">#FFF8CA6A</color>
-    <color name="page_back">#FFEEEEEE</color>
+    <color name="main_text">#DDDDDD</color>
+    <color name="comment_back">#FF191919</color>
+    <color name="float_button">#816C3F</color>
+    <color name="page_back">#111111</color>
     <color name="trans">#00FFFFFF</color>
-    <color name="stall_card">#F5F5F5</color>
-    <color name="bt_text">#303030</color>
-    <color name="bt_back">#DFE0E6</color>
-    <color name="text_box_back">#E1E2E6</color>
-    <color name="card_back">#CCFFFFFF</color>
+    <color name="stall_card">#1A1A1A</color>
+    <color name="bt_text">#CFCFCF</color>
+    <color name="bt_back">#201F20</color>
+    <color name="text_box_back">#1E1D19</color>
+    <color name="card_back">#CC000000</color>
 </resources>

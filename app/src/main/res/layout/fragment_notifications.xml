@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#EEEEEE"
+    android:background="@color/page_back"
     tools:context=".ui.notifications.NotificationsFragment">
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -23,7 +23,7 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginEnd="10dp"
-            app:cardBackgroundColor="#E1E2E6"
+            app:cardBackgroundColor="@color/text_box_back"
             app:cardCornerRadius="10dp"
             app:cardElevation="0dp"
             app:cardMaxElevation="0dp"
@@ -37,7 +37,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginHorizontal="15dp"
-                android:layout_marginVertical="8dp"
+                android:layout_marginVertical="7dp"
                 android:background="@android:color/transparent"
                 android:ems="10"
                 android:hint="搜索讨论贴"
@@ -52,7 +52,7 @@
             android:layout_height="wrap_content"
             android:layout_marginEnd="10dp"
             android:foreground="?android:attr/selectableItemBackground"
-            app:cardBackgroundColor="#DFE0E6"
+            app:cardBackgroundColor="@color/bt_back"
             app:cardCornerRadius="10dp"
             app:cardElevation="0dp"
             app:cardMaxElevation="0dp"
@@ -65,7 +65,8 @@
                 android:layout_width="20dp"
                 android:layout_height="20dp"
                 android:layout_margin="8dp"
-                android:src="@drawable/filter" />
+                android:src="@drawable/filter"
+                app:tint="@color/main_text" />
         </androidx.cardview.widget.CardView>
 
         <androidx.cardview.widget.CardView
@@ -73,7 +74,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:foreground="?android:attr/selectableItemBackground"
-            app:cardBackgroundColor="#DFE0E6"
+            app:cardBackgroundColor="@color/bt_back"
             app:cardCornerRadius="10dp"
             app:cardElevation="0dp"
             app:cardMaxElevation="0dp"
@@ -86,13 +87,14 @@
                 android:layout_width="20dp"
                 android:layout_height="20dp"
                 android:layout_margin="8dp"
-                android:src="@drawable/search" />
+                android:src="@drawable/search"
+                app:tint="@color/main_text" />
         </androidx.cardview.widget.CardView>
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
     <TextView
-        android:id="@+id/textView3"
+        android:id="@+id/selected"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="32dp"
@@ -107,13 +109,26 @@
         android:id="@+id/comment_list"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_marginStart="10dp"
         android:layout_marginTop="8dp"
-        android:layout_marginEnd="10dp"
         android:layout_marginBottom="56dp"
+        android:paddingHorizontal="10dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/textView3" />
+        app:layout_constraintTop_toBottomOf="@+id/selected" />
+
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/floatingActionButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="16dp"
+        android:layout_marginBottom="72dp"
+        android:clickable="true"
+        android:src="@drawable/edit"
+        android:tint="@color/main_text"
+        app:backgroundTint="@color/float_button"
+        app:elevation="4dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

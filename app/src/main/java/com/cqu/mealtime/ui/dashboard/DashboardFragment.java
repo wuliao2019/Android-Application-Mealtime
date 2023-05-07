@@ -8,6 +8,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
 import android.os.Message;
+import android.util.Log;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -52,16 +53,13 @@ public class DashboardFragment extends Fragment {
     OptionsPickerView pvOptions12;
     RecyclerView stallList;
     EditText editText;
-
     StallAdapter stallAdapter;
 
-    private int limit_type = 0;
-    private int limit_can = 0;
-    private int limit_loc = 0;
-
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        assert getArguments() != null;
-        limit_can = getArguments().getInt("CanteenIndex");
+        if (getArguments() != null && getArguments().getInt("CanteenIndex") >= 0) {
+            DashboardData.limit_can = getArguments().getInt("CanteenIndex");
+            DashboardData.changed = true;
+        }
         binding = FragmentDashboardBinding.inflate(inflater, container, false);
         View root = binding.getRoot();
         bt1 = binding.buttonCanteen;
@@ -91,17 +89,17 @@ public class DashboardFragment extends Fragment {
         //条件选择器
         pvOptions3 = new OptionsPickerBuilder(getContext(), (options1, options2, options3, v) -> {
             bt3.setText(DashboardData.types.get(options1));
-            limit_type = options1;
+            DashboardData.limit_type = options1;
             new Thread(this::queryStalls).start();
         }).build();
         pvOptions12 = new OptionsPickerBuilder(getContext(), (options1, options2, options3, v) -> {
             bt1.setText(DashboardData.canteens.get(options1));
             bt2.setText(DashboardData.locations.get(options1).get(options2));
-            limit_can = options1;
-            limit_loc = DashboardData.locId.get(options1).get(options2);
+            DashboardData.limit_can = options1;
+            DashboardData.limit_loc = DashboardData.locId.get(options1).get(options2);
             new Thread(this::queryStalls).start();
         }).build();
-        DashboardData.stalls.clear();
+//        DashboardData.stalls.clear();
         stallAdapter = new StallAdapter(getContext(), DashboardData.stalls);
         stallAdapter.setOnItemClickListener(new StallAdapter.OnItemClickListener() {
             @Override
@@ -115,11 +113,15 @@ public class DashboardFragment extends Fragment {
             }
         });
         stallList.setAdapter(stallAdapter);
-        new Thread(() -> {
-            System.out.println("开始获取列表");
-            queryList();
-            queryStalls();
-        }).start();
+        if (DashboardData.changed)
+            new Thread(() -> {
+                System.out.println("开始获取列表");
+                queryList();
+                queryStalls();
+                DashboardData.changed = false;
+            }).start();
+        else
+            initLimit();
         return root;
     }
 
@@ -158,13 +160,13 @@ public class DashboardFragment extends Fragment {
                 DashboardData.locId.add(new ArrayList<>());
                 DashboardData.locId.get(i + 1).add(0);
             }
+            DashboardData.loc.add("全部楼层");
             response = doGet("http://140.210.194.87:8088/locations", "");
             jsonArray = new JSONArray(response);
             for (int i = 0; i < jsonArray.length(); i++) {
                 jsonObject = jsonArray.getJSONObject(i);
-                DashboardData.locations.get(0).add(jsonObject.getString("locationName"));
+                DashboardData.loc.add(jsonObject.getString("locationName"));
                 DashboardData.locations.get(jsonObject.getInt("canId")).add(jsonObject.getString("locationName"));
-                DashboardData.locId.get(0).add(i + 1);
                 DashboardData.locId.get(jsonObject.getInt("canId")).add(jsonObject.getInt("locationId"));
             }
             System.out.println("列表获取完成");
@@ -179,12 +181,12 @@ public class DashboardFragment extends Fragment {
 
     private void queryStalls() {
         Map<String, Object> params = new HashMap<>();//组合参数
-        if (limit_type > 0)
-            params.put("tyId", String.valueOf(limit_type));
-        if (limit_can > 0)
-            params.put("canId", String.valueOf(limit_can));
-        if (limit_loc > 0)
-            params.put("locId", String.valueOf(limit_loc));
+        if (DashboardData.limit_type > 0)
+            params.put("tyId", String.valueOf(DashboardData.limit_type));
+        if (DashboardData.limit_can > 0)
+            params.put("canId", String.valueOf(DashboardData.limit_can));
+        if (DashboardData.limit_loc > 0)
+            params.put("locId", String.valueOf(DashboardData.limit_loc));
         if (editText.getText() != null && !editText.getText().toString().equals(""))
             params.put("stallName", String.valueOf(editText.getText()));
         String response = doGet("http://140.210.194.87:8088/stalls", urlEncode(params));
@@ -230,7 +232,9 @@ public class DashboardFragment extends Fragment {
         bt1.setOnClickListener(v -> pvOptions12.show());
         bt2.setOnClickListener(v -> pvOptions12.show());
         bt3.setOnClickListener(v -> pvOptions3.show());
-        bt1.setText(DashboardData.canteens.get(limit_can));
+        bt1.setText(DashboardData.canteens.get(DashboardData.limit_can));
+        bt2.setText(DashboardData.loc.get(DashboardData.limit_loc));
+        bt3.setText(DashboardData.types.get(DashboardData.limit_type));
     }
 
     private void refresh() {

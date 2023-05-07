@@ -2,8 +2,10 @@ package com.cqu.mealtime.ui.home;
 
 import static com.cqu.mealtime.util.RequestUtil.doGet;
 
-import android.content.Context;
+import android.content.Intent;
 import android.content.res.AssetManager;
+import android.content.res.Configuration;
+import android.graphics.Color;
 import android.graphics.Typeface;
 import android.os.Bundle;
 import android.os.Handler;
@@ -36,10 +38,13 @@ import com.amap.api.maps.model.HeatmapTileProvider;
 import com.amap.api.maps.model.LatLng;
 import com.amap.api.maps.model.Marker;
 import com.amap.api.maps.model.MarkerOptions;
+import com.amap.api.maps.model.Text;
+import com.amap.api.maps.model.TextOptions;
 import com.amap.api.maps.model.TileOverlay;
 import com.amap.api.maps.model.TileOverlayOptions;
 import com.amap.api.maps.model.WeightedLatLng;
 import com.cqu.mealtime.Canteen;
+import com.cqu.mealtime.CommentActivity;
 import com.cqu.mealtime.InfoWinAdapter;
 import com.cqu.mealtime.R;
 import com.cqu.mealtime.databinding.FragmentHomeBinding;
@@ -73,6 +78,7 @@ public class HomeFragment extends Fragment {
     RecyclerView canteenList;
     Timer timer;
     TileOverlay tileOverlay;
+    Typeface tf;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -94,10 +100,14 @@ public class HomeFragment extends Fragment {
         mapView = binding.map;
         TextView title = binding.titleText;
         AssetManager mgr = requireActivity().getAssets();
-        Typeface tf = Typeface.createFromAsset(mgr, "fonts/SmileySans_Oblique.ttf");
+        tf = Typeface.createFromAsset(mgr, "fonts/SmileySans_Oblique.ttf");
         title.setTypeface(tf);
         mapView.onCreate(savedInstanceState);// 此方法必须重写
         aMap = mapView.getMap();
+        if ((this.getResources().getConfiguration().uiMode & Configuration.UI_MODE_NIGHT_MASK) == Configuration.UI_MODE_NIGHT_YES)
+            aMap.setMapType(AMap.MAP_TYPE_NIGHT);//夜景地图模式
+        else
+            aMap.setMapType(AMap.MAP_TYPE_NORMAL);// 矢量地图模式
         aMap.setPointToCenter(540, 800);
         aMap.setInfoWindowAdapter(infoWinAdapter);
         LatLng latLng = new LatLng(29.593, 106.298);
@@ -124,8 +134,7 @@ public class HomeFragment extends Fragment {
                 }
             });
         });
-        btEdit.setOnClickListener(v -> {
-        });
+        btEdit.setOnClickListener(v -> startActivity(new Intent(getActivity(), CommentActivity.class)));
         btPhoto.setOnClickListener(v -> {
         });
         UtilKt.addClickScale(btRst, 0.8f, 100);
@@ -157,7 +166,7 @@ public class HomeFragment extends Fragment {
         canteenList.setAdapter(canteenAdapter);
         LayoutAnimationController layoutAnimationController = AnimationUtils.loadLayoutAnimation(getContext(), R.anim.list_anim);
         canteenList.setLayoutAnimation(layoutAnimationController);
-        refresh();
+        refreshPage();
         TimerTask task = new TimerTask() {
             @Override
             public void run() {
@@ -246,7 +255,7 @@ public class HomeFragment extends Fragment {
             if (msg.what == COMPLETED) {
                 Toast.makeText(getContext(), toastMsg, Toast.LENGTH_SHORT).show();
             } else if (msg.what == COMPLETED2) {
-                refresh();
+                refreshPage();
             } else if (msg.what == COMPLETED3) {
                 realtimeUpdate();
                 if (infoOpened)
@@ -255,12 +264,22 @@ public class HomeFragment extends Fragment {
         }
     };
 
-    private void refresh() {
-        canteenAdapter.notifyDataSetChanged();
+    private void refreshPage() {
+        if (canteenAdapter != null)
+            canteenAdapter.notifyDataSetChanged();
         aMap.clear();
         markers.clear();
         for (int i = 0; i < canteens.size(); i++) {
-            markers.add(aMap.addMarker(new MarkerOptions().position(canteens.get(i).getLocation()).title(canteens.get(i).getName()).icon(BitmapDescriptorFactory.fromResource(R.drawable.meal)).snippet(String.valueOf(i))));
+            markers.add(aMap.addMarker(new MarkerOptions().position(canteens.get(i).getLocation()).title(canteens.get(i).getName()).icon(BitmapDescriptorFactory.fromResource(R.drawable.icon_meal)).snippet(String.valueOf(i))));//BitmapDescriptorFactory.fromBitmap(getMyBitmap(canteens.get(i).getName()))
+            TextOptions textOptions = new TextOptions()
+                    .position(new LatLng(canteens.get(i).getLocation().latitude - 0.0004, canteens.get(i).getLocation().longitude))
+                    .text(canteens.get(i).getName())
+                    .fontColor(getContext().getColor(R.color.main_text))
+                    .backgroundColor(Color.TRANSPARENT)
+                    .fontSize(30)
+                    .align(Text.ALIGN_CENTER_HORIZONTAL, Text.ALIGN_BOTTOM)
+                    .typeface(tf);
+            aMap.addText(textOptions);
         }
         canteenList.startLayoutAnimation();
     }
@@ -296,70 +315,15 @@ public class HomeFragment extends Fragment {
         }
     }
 
-    static class CanteenAdapter extends RecyclerView.Adapter<CanteenAdapter.Vh> {
-        private final Context context;
-        public List<Canteen> canteensList;
-
-        public CanteenAdapter(Context context, List<Canteen> canteensList) {
-            this.context = context;
-            this.canteensList = canteensList;
-        }
-
-        @NonNull
-        @Override
-        public CanteenAdapter.Vh onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-            return new Vh(LayoutInflater.from(context).inflate(R.layout.canteen_card, null));
-        }
-
-        @Override
-        public void onBindViewHolder(CanteenAdapter.Vh holder, final int position) {
-            holder.itemName.setText(canteensList.get(position).getName());
-            holder.itemTime.setText("营业时间：\n" + canteensList.get(position).getTime());
-            holder.itemNum.setText(String.valueOf(canteensList.get(position).getFlow()));
-            holder.itemState.setText(canteensList.get(position).getState());
-            holder.itemState.setTextColor(canteensList.get(position).getColor());
-            holder.itemNum.setTextColor(canteensList.get(position).getColor());
-
-            if (mOnItemClickListener != null) {
-                holder.itemView.setOnClickListener(v -> mOnItemClickListener.onClick(position, v));
-                holder.itemView.setOnLongClickListener(v -> {
-                    mOnItemClickListener.onLongClick(position, v);
-                    return true;
-                });
-            }
-        }
-
-        public interface OnItemClickListener {
-            void onClick(int position, View v);
-
-            void onLongClick(int position, View v);
-        }
-
-        private OnItemClickListener mOnItemClickListener;
-
-        public void setOnItemClickListener(OnItemClickListener onItemClickListener) {
-            this.mOnItemClickListener = onItemClickListener;
-        }
-
-        @Override
-        public int getItemCount() {
-            return canteensList.size();
-        }
-
-        static class Vh extends RecyclerView.ViewHolder {
-            private final TextView itemName;
-            private final TextView itemState;
-            private final TextView itemNum;
-            private final TextView itemTime;
-
-            public Vh(View itemView) {
-                super(itemView);
-                UtilKt.addClickScale(itemView, 0.9f, 150);
-                itemName = itemView.findViewById(R.id.canteen_name);
-                itemState = itemView.findViewById(R.id.canteen_state);
-                itemNum = itemView.findViewById(R.id.canteen_num);
-                itemTime = itemView.findViewById(R.id.canteen_time);
-            }
-        }
-    }
+//    protected Bitmap getMyBitmap(String pm_val) {
+//        Bitmap bitmap = BitmapDescriptorFactory.fromResource(R.drawable.meal).getBitmap();
+//        bitmap = Bitmap.createBitmap(bitmap, 0, 0, bitmap.getWidth(), bitmap.getHeight());
+//        Canvas canvas = new Canvas(bitmap);
+//        TextPaint textPaint = new TextPaint();
+//        textPaint.setAntiAlias(true);
+//        textPaint.setTextSize(22f);
+//        textPaint.setColor(0xFF000000);
+//        canvas.drawText(pm_val, 0, 20, textPaint);// 设置bitmap上面的文字位置
+//        return bitmap;
+//    }
 }

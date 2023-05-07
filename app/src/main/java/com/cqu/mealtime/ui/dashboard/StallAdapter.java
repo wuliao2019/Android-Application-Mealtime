@@ -37,7 +37,7 @@ class StallAdapter extends RecyclerView.Adapter<StallAdapter.Vh> {
         holder.itemId.setText("#" + stallsList.get(position).getId());
         holder.itemType.setText(DashboardData.types.get(stallsList.get(position).getType()));
         holder.itemTypeBack.setCardBackgroundColor(DashboardData.backColors.get(stallsList.get(position).getType() - 1));
-        holder.itemLocation.setText(DashboardData.canteens.get(stallsList.get(position).getLocation1()) + "·" + DashboardData.locations.get(0).get(stallsList.get(position).getLocation2()));
+        holder.itemLocation.setText(DashboardData.canteens.get(stallsList.get(position).getLocation1()) + "·" + DashboardData.loc.get(stallsList.get(position).getLocation2()));
         if (stallsList.get(position).getName().length() > 7)
             holder.itemName.setTextSize(14);
         else
