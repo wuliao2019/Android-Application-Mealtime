@@ -47,6 +47,7 @@ import com.cqu.mealtime.Canteen;
 import com.cqu.mealtime.CommentActivity;
 import com.cqu.mealtime.InfoWinAdapter;
 import com.cqu.mealtime.R;
+import com.cqu.mealtime.UploadActivity;
 import com.cqu.mealtime.databinding.FragmentHomeBinding;
 import com.cqu.mealtime.util.UtilKt;
 
@@ -135,8 +136,7 @@ public class HomeFragment extends Fragment {
             });
         });
         btEdit.setOnClickListener(v -> startActivity(new Intent(getActivity(), CommentActivity.class)));
-        btPhoto.setOnClickListener(v -> {
-        });
+        btPhoto.setOnClickListener(v -> startActivity(new Intent(getActivity(), UploadActivity.class)));
         UtilKt.addClickScale(btRst, 0.8f, 100);
         UtilKt.addClickScale(btEdit, 0.8f, 100);
         UtilKt.addClickScale(btPhoto, 0.8f, 100);
@@ -156,11 +156,6 @@ public class HomeFragment extends Fragment {
                     public void onCancel() {
                     }
                 });
-            }
-
-            @Override
-            public void onLongClick(int position, View v) {
-
             }
         });
         canteenList.setAdapter(canteenAdapter);
@@ -314,16 +309,4 @@ public class HomeFragment extends Fragment {
             infoOpened = false;
         }
     }
-
-//    protected Bitmap getMyBitmap(String pm_val) {
-//        Bitmap bitmap = BitmapDescriptorFactory.fromResource(R.drawable.meal).getBitmap();
-//        bitmap = Bitmap.createBitmap(bitmap, 0, 0, bitmap.getWidth(), bitmap.getHeight());
-//        Canvas canvas = new Canvas(bitmap);
-//        TextPaint textPaint = new TextPaint();
-//        textPaint.setAntiAlias(true);
-//        textPaint.setTextSize(22f);
-//        textPaint.setColor(0xFF000000);
-//        canvas.drawText(pm_val, 0, 20, textPaint);// 设置bitmap上面的文字位置
-//        return bitmap;
-//    }
 }

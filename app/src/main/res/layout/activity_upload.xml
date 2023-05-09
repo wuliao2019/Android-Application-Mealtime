@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/page_back">
@@ -14,7 +15,7 @@
         app:layout_constraintTop_toTopOf="parent">
 
         <ImageView
-            android:id="@+id/bottom_back"
+            android:id="@+id/bottom_back2"
             android:layout_width="40dp"
             android:layout_height="40dp"
             android:layout_marginStart="8dp"
@@ -33,79 +34,57 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="8dp"
-            android:text="新建帖子"
+            android:text="上传档口图片"
             android:textColor="@color/main_text"
             android:textSize="20sp"
             android:textStyle="bold"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintStart_toEndOf="@+id/bottom_back"
+            app:layout_constraintStart_toEndOf="@+id/bottom_back2"
             app:layout_constraintTop_toTopOf="parent" />
 
-        <Button
-            android:id="@+id/button_submit"
-            android:layout_width="65dp"
-            android:layout_height="45dp"
-            android:layout_marginTop="8dp"
-            android:layout_marginEnd="16dp"
-            android:layout_marginBottom="8dp"
-            android:backgroundTint="@color/float_button"
-            android:text="发布"
-            android:textColor="@color/main_text"
-            app:cornerRadius="20dp"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 
-    <EditText
-        android:id="@+id/editText_title"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="24dp"
-        android:layout_marginTop="16dp"
-        android:layout_marginEnd="24dp"
-        android:background="@android:color/transparent"
-        android:ems="10"
-        android:hint="帖子标题"
-        android:inputType="text"
-        android:textSize="20sp"
-        android:textStyle="bold"
+    <ImageView
+        android:id="@+id/src_photo"
+        android:layout_width="320dp"
+        android:layout_height="240dp"
+        android:layout_marginTop="8dp"
+        android:background="@color/comment_back"
+        android:scaleType="centerInside"
+        app:layout_constraintBottom_toTopOf="@+id/button"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/constraintLayout2" />
+        app:layout_constraintTop_toBottomOf="@+id/constraintLayout2"
+        app:srcCompat="@drawable/ic_choose_pic" />
 
-    <View
-        android:id="@+id/divider2"
-        android:layout_width="0dp"
-        android:layout_height="1dp"
-        android:layout_marginStart="24dp"
-        android:layout_marginTop="16dp"
-        android:layout_marginEnd="24dp"
-        android:background="?android:attr/listDivider"
+    <Button
+        android:id="@+id/button"
+        android:layout_width="65dp"
+        android:layout_height="45dp"
+        android:backgroundTint="@color/float_button"
+        android:text="上传"
+        android:textColor="@color/main_text"
+        app:cornerRadius="20dp"
+        app:layout_constraintBottom_toTopOf="@+id/result_photo"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/editText_title" />
+        app:layout_constraintTop_toBottomOf="@+id/src_photo" />
 
-    <EditText
-        android:id="@+id/editText_content"
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_marginStart="24dp"
-        android:layout_marginTop="16dp"
-        android:layout_marginEnd="24dp"
-        android:layout_marginBottom="16dp"
-        android:background="@android:color/transparent"
-        android:ems="10"
-        android:gravity="top"
-        android:hint="帖子内容"
-        android:inputType="text|textMultiLine"
-        app:layout_constraintBottom_toTopOf="@+id/button_choose"
+    <ImageView
+        android:id="@+id/result_photo"
+        android:layout_width="320dp"
+        android:layout_height="240dp"
+        android:layout_marginBottom="8dp"
+        android:background="@color/comment_back"
+        android:scaleType="centerInside"
+        app:layout_constraintBottom_toTopOf="@+id/button_choose2"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/divider2" />
+        app:layout_constraintTop_toBottomOf="@+id/button"
+        app:srcCompat="@drawable/ic_choose_pic" />
 
     <androidx.cardview.widget.CardView
-        android:id="@+id/button_choose"
+        android:id="@+id/button_choose2"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="24dp"
@@ -117,7 +96,7 @@
         app:layout_constraintStart_toStartOf="parent">
 
         <TextView
-            android:id="@+id/choose_loc"
+            android:id="@+id/choose_loc2"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginHorizontal="12dp"
@@ -125,4 +104,38 @@
             android:text="选择地点"
             android:textColor="@color/main_text" />
     </androidx.cardview.widget.CardView>
+
+    <Button
+        android:id="@+id/button_submit"
+        android:layout_width="65dp"
+        android:layout_height="45dp"
+        android:layout_marginEnd="24dp"
+        android:layout_marginBottom="24dp"
+        android:backgroundTint="@color/float_button"
+        android:text="发布"
+        android:textColor="@color/main_text"
+        app:cornerRadius="20dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
+
+    <TextView
+        android:id="@+id/tips_text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="64dp"
+        android:text="点击选择图片"
+        app:layout_constraintBottom_toBottomOf="@+id/src_photo"
+        app:layout_constraintEnd_toEndOf="@+id/src_photo"
+        app:layout_constraintStart_toStartOf="@+id/src_photo" />
+
+    <TextView
+        android:id="@+id/tips_text2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="64dp"
+        android:text="上传图片预览结果"
+        app:layout_constraintBottom_toBottomOf="@+id/result_photo"
+        app:layout_constraintEnd_toEndOf="@+id/result_photo"
+        app:layout_constraintStart_toStartOf="@+id/result_photo" />
+
 </androidx.constraintlayout.widget.ConstraintLayout>

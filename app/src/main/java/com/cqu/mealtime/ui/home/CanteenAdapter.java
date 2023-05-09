@@ -41,17 +41,11 @@ class CanteenAdapter extends RecyclerView.Adapter<CanteenAdapter.Vh> {
 
         if (mOnItemClickListener != null) {
             holder.itemView.setOnClickListener(v -> mOnItemClickListener.onClick(position, v));
-            holder.itemView.setOnLongClickListener(v -> {
-                mOnItemClickListener.onLongClick(position, v);
-                return true;
-            });
         }
     }
 
     public interface OnItemClickListener {
         void onClick(int position, View v);
-
-        void onLongClick(int position, View v);
     }
 
     private OnItemClickListener mOnItemClickListener;

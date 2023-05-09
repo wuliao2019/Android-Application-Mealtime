@@ -56,7 +56,7 @@ public class CommentsAdapter extends RecyclerView.Adapter<CommentsAdapter.ViewHo
 
         public ViewHolder(View view) {
             super(view);
-            UtilKt.addClickScale(view, 0.9f, 100);
+            UtilKt.addClickScale(view, 0.9f, 150);
             commentTitle = view.findViewById(R.id.comment_title2);
             commentRemark = view.findViewById(R.id.comment_remark2);
             commentStall = view.findViewById(R.id.comment_stall2);

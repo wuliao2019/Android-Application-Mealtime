@@ -18,4 +18,5 @@
     <color name="bt_back">#201F20</color>
     <color name="text_box_back">#1E1D19</color>
     <color name="card_back">#CC000000</color>
+    <color name="card_canteen">#FF1A1A1A</color>
 </resources>

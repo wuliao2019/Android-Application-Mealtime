@@ -4,6 +4,7 @@ import static com.cqu.mealtime.util.RequestUtil.doGet;
 import static com.cqu.mealtime.util.RequestUtil.urlEncode;
 
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
@@ -31,7 +32,9 @@ import com.bigkoo.pickerview.builder.OptionsPickerBuilder;
 import com.bigkoo.pickerview.view.OptionsPickerView;
 import com.cqu.mealtime.R;
 import com.cqu.mealtime.Stall;
+import com.cqu.mealtime.UploadActivity;
 import com.cqu.mealtime.databinding.FragmentDashboardBinding;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -68,6 +71,8 @@ public class DashboardFragment extends Fragment {
         editText = binding.editTextText;
         CardView btSearch = binding.buttonSearch;
         btSearch.setOnClickListener(v -> new Thread(this::queryStalls).start());
+        FloatingActionButton floatingActionButton = binding.floatingActionButton2;
+        floatingActionButton.setOnClickListener(v -> startActivity(new Intent(getActivity(), UploadActivity.class)));
         editText.setImeOptions(EditorInfo.IME_ACTION_SEARCH);
         editText.setOnEditorActionListener((textView, i, keyEvent) -> {
             if (i == EditorInfo.IME_ACTION_SEARCH || keyEvent != null && keyEvent.getKeyCode() == KeyEvent.KEYCODE_ENTER) {
