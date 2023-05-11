@@ -37,7 +37,7 @@
                 android:id="@+id/card_name"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="32dp"
+                android:layout_marginStart="28dp"
                 android:layout_marginTop="8dp"
                 android:text="粤式烧腊"
                 android:textColor="@color/main_text"
@@ -49,7 +49,7 @@
                 android:id="@+id/card_location"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="8dp"
+                android:layout_marginStart="12dp"
                 android:layout_marginBottom="8dp"
                 android:text="第一食堂 · 2F 南厅"
                 android:textSize="10sp"
@@ -70,7 +70,7 @@
                 app:layout_constraintEnd_toEndOf="parent" />
 
             <TextView
-                android:id="@+id/textView"
+                android:id="@+id/card_time"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginEnd="8dp"
@@ -84,7 +84,7 @@
                 android:id="@+id/card_type_back"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="8dp"
+                android:layout_marginStart="12dp"
                 android:layout_marginTop="6dp"
                 android:layout_marginBottom="4dp"
                 app:cardBackgroundColor="#E91E63"

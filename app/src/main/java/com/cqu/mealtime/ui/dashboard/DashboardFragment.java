@@ -138,7 +138,7 @@ public class DashboardFragment extends Fragment {
 
     private void queryList() {
         try {
-            String response = doGet("http://140.210.194.87:8088/types", "");
+            String response = doGet(getResources().getString(R.string.server_url) + "types", "");
             JSONObject jsonObject;
             JSONArray jsonArray = new JSONArray(response);
             DashboardData.types.clear();
@@ -147,7 +147,7 @@ public class DashboardFragment extends Fragment {
                 jsonObject = jsonArray.getJSONObject(i);
                 DashboardData.types.add(jsonObject.getString("typeName"));
             }
-            response = doGet("http://140.210.194.87:8088/canteens", "");
+            response = doGet(getResources().getString(R.string.server_url) + "canteens", "");
             jsonArray = new JSONArray(response);
             DashboardData.canteens.clear();
             DashboardData.canteens.add("全部食堂");
@@ -166,7 +166,7 @@ public class DashboardFragment extends Fragment {
                 DashboardData.locId.get(i + 1).add(0);
             }
             DashboardData.loc.add("全部楼层");
-            response = doGet("http://140.210.194.87:8088/locations", "");
+            response = doGet(getResources().getString(R.string.server_url) + "locations", "");
             jsonArray = new JSONArray(response);
             for (int i = 0; i < jsonArray.length(); i++) {
                 jsonObject = jsonArray.getJSONObject(i);
@@ -194,7 +194,7 @@ public class DashboardFragment extends Fragment {
             params.put("locId", String.valueOf(DashboardData.limit_loc));
         if (editText.getText() != null && !editText.getText().toString().equals(""))
             params.put("stallName", String.valueOf(editText.getText()));
-        String response = doGet("http://140.210.194.87:8088/stalls", urlEncode(params));
+        String response = doGet(getResources().getString(R.string.server_url) + "stalls", urlEncode(params));
         try {
             JSONArray jsonArray = new JSONArray(response);
             System.out.println("调用档口接口成功");
@@ -202,7 +202,7 @@ public class DashboardFragment extends Fragment {
             DashboardData.stalls.clear();
             for (int i = 0; i < jsonArray.length(); i++) {
                 jsonObject = jsonArray.getJSONObject(i);
-                DashboardData.stalls.add(new Stall(jsonObject.getString("stallName"), jsonObject.getInt("tyId"), jsonObject.getInt("stallNum"), jsonObject.getInt("canId"), jsonObject.getInt("locId")));
+                DashboardData.stalls.add(new Stall(jsonObject.getString("stallName"), jsonObject.getInt("tyId"), jsonObject.getInt("stallNum"), jsonObject.getInt("canId"), jsonObject.getInt("locId"),jsonObject.getInt("peopleCount")));
             }
             toastMsg = "获取档口信息成功";
             Message msg = new Message();

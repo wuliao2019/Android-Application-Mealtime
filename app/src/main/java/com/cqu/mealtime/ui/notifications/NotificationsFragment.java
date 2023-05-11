@@ -157,7 +157,7 @@ public class NotificationsFragment extends Fragment {
 
     private void queryList() {
         try {
-            String response = doGet("http://140.210.194.87:8088/canteens", "");
+            String response = doGet(getResources().getString(R.string.server_url) + "canteens", "");
             JSONArray jsonArray = new JSONArray(response);
             JSONObject jsonObject;
             canteens.clear();
@@ -174,7 +174,7 @@ public class NotificationsFragment extends Fragment {
                 stall_ids.add(new ArrayList<>());
                 stall_ids.get(i + 1).add(0);
             }
-            response = doGet("http://140.210.194.87:8088/locations", "");
+            response = doGet(getResources().getString(R.string.server_url) + "locations", "");
             jsonArray = new JSONArray(response);
             loc.clear();
             loc.add("全部楼层");
@@ -186,7 +186,7 @@ public class NotificationsFragment extends Fragment {
             stalls.add("全部档口");
             locOfStall.clear();
             locOfStall.add(0);
-            response = doGet("http://140.210.194.87:8088/stalls", "");
+            response = doGet(getResources().getString(R.string.server_url) + "stalls", "");
             jsonArray = new JSONArray(response);
             for (int i = 0; i < jsonArray.length(); i++) {
                 jsonObject = jsonArray.getJSONObject(i);
@@ -213,7 +213,7 @@ public class NotificationsFragment extends Fragment {
         if (limit_stall > 0) params.put("stallId", String.valueOf(limit_stall));
         if (editText.getText() != null && !editText.getText().toString().equals(""))
             params.put("discussionName", String.valueOf(editText.getText()));
-        String response = doGet("http://140.210.194.87:8088/discussion", urlEncode(params));
+        String response = doGet(getResources().getString(R.string.server_url) + "discussion", urlEncode(params));
         try {
             JSONArray jsonArray = new JSONArray(response);
             Log.i("status", "调用讨论接口成功");

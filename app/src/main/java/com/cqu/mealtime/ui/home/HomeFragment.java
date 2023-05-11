@@ -166,7 +166,7 @@ public class HomeFragment extends Fragment {
             @Override
             public void run() {
                 try {
-                    String response = doGet("http://140.210.194.87:8088/realtime", "");
+                    String response = doGet(getResources().getString(R.string.server_url) + "realtime", "");
                     if (response != null && !canteens.isEmpty()) {
                         JSONArray jsonArray = new JSONArray(response);
                         for (int i = 0; i < jsonArray.length(); i++)
@@ -212,7 +212,7 @@ public class HomeFragment extends Fragment {
     }
 
     private void queryCanteens() {
-        String response = doGet("http://140.210.194.87:8088/canteens", "");
+        String response = doGet(getResources().getString(R.string.server_url) + "canteens", "");
         if (progressBar != null)
             progressBar.setVisibility(View.VISIBLE);
         try {

@@ -6,15 +6,16 @@ public class Stall {
     private int id;
     private int location1;
     private int location2;
-    private int flow = 0;
     private int time = 0;
+    private int peopleCount = 0;
 
-    public Stall(String name, int type, int id, int location1, int location2) {
+    public Stall(String name, int type, int id, int location1, int location2, int peopleCount) {
         this.name = name;
         this.type = type;
         this.id = id;
         this.location1 = location1;
         this.location2 = location2;
+        this.peopleCount = peopleCount;
     }
 
     public String getName() {
@@ -57,19 +58,33 @@ public class Stall {
         this.location2 = location2;
     }
 
-    public int getFlow() {
-        return flow;
-    }
-
-    public void setFlow(int flow) {
-        this.flow = flow;
-    }
-
     public int getTime() {
         return time;
     }
 
     public void setTime(int time) {
         this.time = time;
+    }
+
+    public int getColor() {
+        if (peopleCount < 10)
+            return 0xFF4CAF50;
+        else if (peopleCount < 20)
+            return 0xffFCCC64;
+        else
+            return 0xFFE4192B;
+    }
+
+    public String getState() {
+        if (peopleCount < 10)
+            return "空闲";
+        else if (peopleCount < 20)
+            return "一般";
+        else
+            return "拥挤";
+    }
+
+    public int getWaitTime() {
+        return peopleCount / 2;
     }
 }

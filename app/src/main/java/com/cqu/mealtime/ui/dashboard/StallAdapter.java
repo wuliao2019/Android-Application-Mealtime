@@ -38,6 +38,9 @@ class StallAdapter extends RecyclerView.Adapter<StallAdapter.Vh> {
         holder.itemType.setText(DashboardData.types.get(stallsList.get(position).getType()));
         holder.itemTypeBack.setCardBackgroundColor(DashboardData.backColors.get(stallsList.get(position).getType() - 1));
         holder.itemLocation.setText(DashboardData.canteens.get(stallsList.get(position).getLocation1()) + "·" + DashboardData.loc.get(stallsList.get(position).getLocation2()));
+        holder.itemState.setText(stallsList.get(position).getState());
+        holder.itemState.setTextColor(stallsList.get(position).getColor());
+        holder.itemTime.setText("预计 " + stallsList.get(position).getWaitTime() + " min");
         if (stallsList.get(position).getName().length() > 7)
             holder.itemName.setTextSize(14);
         else
@@ -73,8 +76,9 @@ class StallAdapter extends RecyclerView.Adapter<StallAdapter.Vh> {
         private final TextView itemId;
         private final TextView itemLocation;
         private final TextView itemType;
+        private final TextView itemState;
         private final CardView itemTypeBack;
-//            private final TextView itemTime;
+        private final TextView itemTime;
 
         public Vh(View itemView) {
             super(itemView);
@@ -84,7 +88,8 @@ class StallAdapter extends RecyclerView.Adapter<StallAdapter.Vh> {
             itemLocation = itemView.findViewById(R.id.card_location);
             itemType = itemView.findViewById(R.id.card_type);
             itemTypeBack = itemView.findViewById(R.id.card_type_back);
-//                itemTime = itemView.findViewById(R.id.canteen_time);
+            itemState = itemView.findViewById(R.id.card_state);
+            itemTime = itemView.findViewById(R.id.card_time);
         }
     }
 }

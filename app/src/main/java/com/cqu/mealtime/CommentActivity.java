@@ -1,7 +1,7 @@
 package com.cqu.mealtime;
 
 import static com.cqu.mealtime.util.RequestUtil.doGet;
-import static com.cqu.mealtime.util.RequestUtil.doPost;
+import static com.cqu.mealtime.util.RequestUtil.doRequest;
 import static com.cqu.mealtime.util.RequestUtil.urlEncode;
 
 import android.content.res.Configuration;
@@ -23,7 +23,6 @@ import androidx.cardview.widget.CardView;
 
 import com.bigkoo.pickerview.builder.OptionsPickerBuilder;
 import com.bigkoo.pickerview.view.OptionsPickerView;
-import com.cqu.mealtime.ui.dashboard.DashboardData;
 import com.cqu.mealtime.util.UtilKt;
 
 import org.json.JSONArray;
@@ -94,7 +93,7 @@ public class CommentActivity extends AppCompatActivity {
 
     private void queryList() {
         try {
-            String response = doGet("http://140.210.194.87:8088/canteens", "");
+            String response = doGet(getResources().getString(R.string.server_url) + "canteens", "");
             JSONArray jsonArray = new JSONArray(response);
             JSONObject jsonObject;
             canteens.clear();
@@ -111,7 +110,7 @@ public class CommentActivity extends AppCompatActivity {
                 stall_ids.add(new ArrayList<>());
                 stall_ids.get(i + 1).add(0);
             }
-            response = doGet("http://140.210.194.87:8088/stalls", "");
+            response = doGet(getResources().getString(R.string.server_url) + "stalls", "");
             jsonArray = new JSONArray(response);
             for (int i = 0; i < jsonArray.length(); i++) {
                 jsonObject = jsonArray.getJSONObject(i);
@@ -156,7 +155,7 @@ public class CommentActivity extends AppCompatActivity {
             params.put("stallId", String.valueOf(stall_ids.get(limit_can).get(limit_stall)));
             params.put("usrId", "1");
             params.put("discussionTime", df.format(Calendar.getInstance().getTime()));
-            String response = doPost("http://140.210.194.87:8088/discussion", urlEncode(params));
+            String response = doRequest("POST", getResources().getString(R.string.server_url) + "discussion", urlEncode(params));
             if (!response.equals("error")) {
                 toastMsg = "发布成功";
                 Message msg = new Message();
