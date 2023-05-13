@@ -130,7 +130,8 @@ public class RequestUtil {
                     sbf.append(System.getProperty("line.separator"));
                 }
                 result = sbf.toString();
-            }
+            } else
+                result = "error";
         } catch (IOException e) {
             e.printStackTrace();
         } finally {

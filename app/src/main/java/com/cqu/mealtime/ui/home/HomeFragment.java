@@ -1,8 +1,10 @@
 package com.cqu.mealtime.ui.home;
 
+import static android.content.Context.MODE_PRIVATE;
 import static com.cqu.mealtime.util.RequestUtil.doGet;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.res.AssetManager;
 import android.content.res.Configuration;
 import android.graphics.Color;
@@ -111,6 +113,10 @@ public class HomeFragment extends Fragment {
             aMap.setMapType(AMap.MAP_TYPE_NORMAL);// 矢量地图模式
         aMap.setPointToCenter(540, 800);
         aMap.setInfoWindowAdapter(infoWinAdapter);
+        SharedPreferences.Editor editor = getContext().getSharedPreferences("user_inf", MODE_PRIVATE).edit();
+        editor.putString("map_num", aMap.getMapContentApprovalNumber());
+        editor.apply();
+        aMap.getUiSettings().setZoomControlsEnabled(false);
         LatLng latLng = new LatLng(29.593, 106.298);
 
         aMap.setOnMapClickListener(latLng1 -> infoWinAdapter.hideInfo());

@@ -17,6 +17,8 @@
     <color name="bt_text">#303030</color>
     <color name="bt_back">#DFE0E6</color>
     <color name="text_box_back">#E1E2E6</color>
+    <color name="text_box_back2">#EBE6D7</color>
     <color name="card_back">#CCFFFFFF</color>
     <color name="card_canteen">#FFFFFFFF</color>
+    <color name="login_back">#F1ECDB</color>
 </resources>

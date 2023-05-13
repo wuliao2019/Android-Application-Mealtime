@@ -4,6 +4,7 @@ import static com.cqu.mealtime.util.RequestUtil.doGet;
 import static com.cqu.mealtime.util.RequestUtil.doRequest;
 import static com.cqu.mealtime.util.RequestUtil.urlEncode;
 
+import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.os.Bundle;
 import android.os.Handler;
@@ -147,13 +148,17 @@ public class CommentActivity extends AppCompatActivity {
 
     private void queryInsert() {
         SimpleDateFormat df = new SimpleDateFormat("yyyy年M月d日 HH:mm", Locale.CHINA);
+        SharedPreferences sp = getSharedPreferences("user_inf", MODE_PRIVATE);
+        int usrId = 1;
+        if (sp != null)
+            usrId = sp.getInt("id", 1);
         try {
             Map<String, Object> params = new HashMap<>();//组合参数
             params.put("discussionName", title.getText());
             params.put("discussionContent", remark.getText());
             params.put("canId", String.valueOf(limit_can));
             params.put("stallId", String.valueOf(stall_ids.get(limit_can).get(limit_stall)));
-            params.put("usrId", "1");
+            params.put("usrId", usrId);
             params.put("discussionTime", df.format(Calendar.getInstance().getTime()));
             String response = doRequest("POST", getResources().getString(R.string.server_url) + "discussion", urlEncode(params));
             if (!response.equals("error")) {

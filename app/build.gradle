@@ -53,6 +53,7 @@ dependencies {
     implementation 'com.google.android.exoplayer:extension-rtmp:2.18.6'
     implementation 'com.contrarywind:Android-PickerView:4.1.9'
     implementation 'com.squareup.okhttp3:okhttp:4.11.0'
+    implementation 'com.github.ybq:Android-SpinKit:1.4.0'
 //    implementation 'com.github.lecho:hellocharts-library:1.5.8@aar'
     implementation files('libs/AMap3DMap_9.6.0_AMapLocation_6.2.0_20230116.jar')
     testImplementation 'junit:junit:4.13.2'
