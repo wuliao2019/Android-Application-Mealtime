@@ -166,7 +166,7 @@ public class RequestUtil {
                 ContentResolver cr = context.getContentResolver();
                 Cursor cur = cr.query(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, new String[]{MediaStore.Images.ImageColumns._ID, MediaStore.Images.ImageColumns.DATA}, "(" + MediaStore.Images.ImageColumns.DATA + "=" + "'" + path + "'" + ")", null, null);
                 int index = 0;
-                int dataIdx = 0;
+                int dataIdx;
                 for (cur.moveToFirst(); !cur.isAfterLast(); cur.moveToNext()) {
                     index = cur.getColumnIndex(MediaStore.Images.ImageColumns._ID);
                     index = cur.getInt(index);

@@ -92,8 +92,7 @@
                 android:background="@android:color/transparent"
                 android:ems="10"
                 android:hint="密码"
-                android:inputType="text"
-                android:password="true"
+                android:inputType="textPassword"
                 android:text=""
                 android:textSize="16sp" />
         </androidx.cardview.widget.CardView>
@@ -122,8 +121,7 @@
                 android:background="@android:color/transparent"
                 android:ems="10"
                 android:hint="再次输入密码"
-                android:inputType="text"
-                android:password="true"
+                android:inputType="textPassword"
                 android:text=""
                 android:textSize="16sp" />
         </androidx.cardview.widget.CardView>

@@ -16,7 +16,6 @@ import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 
 import com.cqu.mealtime.LoginActivity;
-import com.cqu.mealtime.MainActivity;
 import com.cqu.mealtime.databinding.FragmentCustomizationBinding;
 
 public class CustomizationFragment extends Fragment {
