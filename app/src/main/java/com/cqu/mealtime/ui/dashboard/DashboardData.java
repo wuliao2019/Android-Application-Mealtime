@@ -1,6 +1,6 @@
 package com.cqu.mealtime.ui.dashboard;
 
-import com.cqu.mealtime.Stall;
+import com.cqu.mealtime.entity.Stall;
 
 import java.util.ArrayList;
 import java.util.Arrays;

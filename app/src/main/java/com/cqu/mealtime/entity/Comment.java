@@ -1,4 +1,4 @@
-package com.cqu.mealtime;
+package com.cqu.mealtime.entity;
 
 public class Comment {
     String title;

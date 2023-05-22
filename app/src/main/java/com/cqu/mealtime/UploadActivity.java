@@ -60,17 +60,17 @@ import okhttp3.Response;
 
 public class UploadActivity extends AppCompatActivity {
     public static final int[] COMPLETED = {-1, -2, -3, -4, -5, -6};
-    private String toastMsg, people_count;
+    private String toastMsg, people_count, fn;
     OptionsPickerView pvOptions;
     CardView cardView;
     TextView textView, tips_txt, result_txt;
     ImageView imageView1, imageView2;
     ProgressBar progressBar;
     Button buttonUpload, buttonSubmit;
-    List<String> canteens = new ArrayList<>();
+    List<String> canteens = new ArrayList<>(), stalls = new ArrayList<>();
     List<List<String>> stall_names;
     List<List<Integer>> stall_ids;
-    int limit_can = 0, limit_stall = 0;
+    int stall_id = 0, can_id = 0;
     // 照片所在的Uri地址
     private Uri imageUri;
     Bitmap bitmap;
@@ -133,8 +133,8 @@ public class UploadActivity extends AppCompatActivity {
                 textView.setText("地点：" + canteens.get(options1));
             else
                 textView.setText("地点：" + canteens.get(options1) + " · " + stall_names.get(options1).get(options2));
-            limit_can = options1;
-            limit_stall = options2;
+            stall_id = stall_ids.get(options1).get(options2);
+
         }).build();
         imageView1 = findViewById(R.id.src_photo);
         imageView2 = findViewById(R.id.result_photo);
@@ -147,6 +147,7 @@ public class UploadActivity extends AppCompatActivity {
         buttonUpload.setOnClickListener(v -> {
             if (imageUri != null) {
                 progressBar.setVisibility(View.VISIBLE);
+                imageView2.setImageResource(R.drawable.ic_choose_pic);
                 tips_txt.setVisibility(View.VISIBLE);
                 tips_txt.setText("正在上传图片");
                 new Thread(this::doPostAImage).start();
@@ -158,7 +159,7 @@ public class UploadActivity extends AppCompatActivity {
             }
         });
         buttonSubmit.setOnClickListener(v -> {
-            if (limit_can == 0 || limit_stall == 0) {
+            if (stall_id == 0) {
                 toastMsg = "请选择具体的档口";
                 Toast.makeText(UploadActivity.this, toastMsg, Toast.LENGTH_SHORT).show();
             } else
@@ -185,6 +186,8 @@ public class UploadActivity extends AppCompatActivity {
                 stall_ids.add(new ArrayList<>());
                 stall_ids.get(i + 1).add(0);
             }
+            stalls.clear();
+            stalls.add("全部档口");
             response = doGet(getResources().getString(R.string.server_url) + "stalls", "");
             jsonArray = new JSONArray(response);
             for (int i = 0; i < jsonArray.length(); i++) {
@@ -192,6 +195,7 @@ public class UploadActivity extends AppCompatActivity {
                 int cid = jsonObject.getInt("canId");
                 stall_names.get(cid).add(jsonObject.getString("stallName"));
                 stall_ids.get(cid).add(jsonObject.getInt("stallId"));
+                stalls.add(jsonObject.getString("stallName"));
             }
             Log.i("status", "列表获取完成");
             Message msg = new Message();
@@ -205,9 +209,10 @@ public class UploadActivity extends AppCompatActivity {
     private void submit() {
         try {
             Map<String, Object> params = new HashMap<>();//组合参数
-            params.put("stallId", stall_ids.get(limit_can).get(limit_stall));
-            params.put("peopleCount", people_count);
-            doRequest("PUT", getResources().getString(R.string.server_url) + "stalls", urlEncode(params));
+            params.put("stallId", stall_id);
+            params.put("peopleNum", people_count);
+            params.put("fileName", fn);
+            doRequest("POST", getResources().getString(R.string.server_url) + "stalls/addPic", urlEncode(params));
             toastMsg = "已提交人流量信息";
             Message msg = new Message();
             msg.what = COMPLETED[5];
@@ -230,14 +235,16 @@ public class UploadActivity extends AppCompatActivity {
                 progressBar.setVisibility(View.INVISIBLE);
                 tips_txt.setVisibility(View.INVISIBLE);
                 imageView2.setImageBitmap(bitmap);
-                result_txt.setText("人数：" + people_count);
                 buttonUpload.setEnabled(false);
                 buttonUpload.setAlpha(.5f);
                 buttonSubmit.setAlpha(1f);
                 buttonSubmit.setEnabled(true);
-            } else if (msg.what == COMPLETED[4])
-                tips_txt.setText("正在接收结果");
-            else if (msg.what == COMPLETED[5]) {
+            } else if (msg.what == COMPLETED[4]) {
+                tips_txt.setText("正在接收结果图片");
+                result_txt.setText("人数：" + people_count);
+                if (stall_id != 0)
+                    textView.setText("地点：" + canteens.get(can_id) + " · " + stalls.get(stall_id));
+            } else if (msg.what == COMPLETED[5]) {
                 Toast.makeText(UploadActivity.this, toastMsg, Toast.LENGTH_SHORT).show();
                 finish();
             }
@@ -314,10 +321,14 @@ public class UploadActivity extends AppCompatActivity {
                 Log.i("UploadPhoto: Done!", result);
                 JSONObject jsonObject = new JSONObject(result);
                 people_count = jsonObject.getString("num");
+                if (jsonObject.getInt("stallId") > 0)
+                    stall_id = jsonObject.getInt("stallId");
+                can_id = jsonObject.getInt("canId");
                 Message msg = new Message();
                 msg.what = COMPLETED[4];
                 handler.sendMessage(msg);
-                bitmap = getPic(getResources().getString(R.string.server_url) + "realtime/getImg");
+                fn = jsonObject.getString("file_name");
+                bitmap = getPic(getResources().getString(R.string.server_url) + "realtime/getImg/" + fn);
                 msg = new Message();
                 msg.what = COMPLETED[3];
                 handler.sendMessage(msg);

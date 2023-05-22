@@ -39,9 +39,9 @@ public class RequestUtil {
             // 设置连接方式：get
             connection.setRequestMethod("GET");
             // 设置连接主机服务器的超时时间：15000毫秒
-            connection.setConnectTimeout(5000);
+            connection.setConnectTimeout(15000);
             // 设置读取远程返回的数据时间：60000毫秒
-            connection.setReadTimeout(6000);
+            connection.setReadTimeout(60000);
             // 发送请求
             connection.connect();
             // 通过connection连接，获取输入流
@@ -112,9 +112,9 @@ public class RequestUtil {
             // 设置连接方式：get
             connection.setRequestMethod(method);
             // 设置连接主机服务器的超时时间：15000毫秒
-            connection.setConnectTimeout(5000);
+            connection.setConnectTimeout(15000);
             // 设置读取远程返回的数据时间：60000毫秒
-            connection.setReadTimeout(6000);
+            connection.setReadTimeout(60000);
             // 发送请求
             connection.connect();
             // 通过connection连接，获取输入流

@@ -45,7 +45,7 @@ import com.amap.api.maps.model.TextOptions;
 import com.amap.api.maps.model.TileOverlay;
 import com.amap.api.maps.model.TileOverlayOptions;
 import com.amap.api.maps.model.WeightedLatLng;
-import com.cqu.mealtime.Canteen;
+import com.cqu.mealtime.entity.Canteen;
 import com.cqu.mealtime.CommentActivity;
 import com.cqu.mealtime.InfoWinAdapter;
 import com.cqu.mealtime.R;

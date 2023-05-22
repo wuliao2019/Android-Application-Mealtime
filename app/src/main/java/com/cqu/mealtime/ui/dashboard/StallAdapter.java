@@ -11,7 +11,7 @@ import androidx.cardview.widget.CardView;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.cqu.mealtime.R;
-import com.cqu.mealtime.Stall;
+import com.cqu.mealtime.entity.Stall;
 import com.cqu.mealtime.util.UtilKt;
 
 import java.util.List;

@@ -34,22 +34,18 @@ import androidx.recyclerview.widget.StaggeredGridLayoutManager;
 
 import com.bigkoo.pickerview.builder.OptionsPickerBuilder;
 import com.bigkoo.pickerview.view.OptionsPickerView;
-import com.cqu.mealtime.Comment;
+import com.cqu.mealtime.entity.Comment;
 import com.cqu.mealtime.CommentActivity;
 import com.cqu.mealtime.R;
-import com.cqu.mealtime.Stall;
 import com.cqu.mealtime.databinding.FragmentNotificationsBinding;
-import com.cqu.mealtime.ui.dashboard.DashboardData;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
 
 public class NotificationsFragment extends Fragment {

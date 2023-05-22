@@ -1,4 +1,4 @@
-package com.cqu.mealtime;
+package com.cqu.mealtime.entity;
 
 public class Stall {
     private String name;
@@ -7,9 +7,9 @@ public class Stall {
     private int location1;
     private int location2;
     private int time = 0;
-    private int peopleCount = 0;
+    private double peopleCount = 0;
 
-    public Stall(String name, int type, int id, int location1, int location2, int peopleCount) {
+    public Stall(String name, int type, int id, int location1, int location2, double peopleCount) {
         this.name = name;
         this.type = type;
         this.id = id;
@@ -85,6 +85,6 @@ public class Stall {
     }
 
     public int getWaitTime() {
-        return peopleCount / 2;
+        return (int) (peopleCount / 2);
     }
 }

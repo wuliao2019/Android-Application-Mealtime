@@ -1,4 +1,4 @@
-package com.cqu.mealtime;
+package com.cqu.mealtime.entity;
 
 import com.amap.api.maps.model.LatLng;
 

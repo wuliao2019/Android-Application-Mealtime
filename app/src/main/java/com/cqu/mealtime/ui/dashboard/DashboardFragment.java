@@ -9,7 +9,6 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
 import android.os.Message;
-import android.util.Log;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -31,7 +30,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.bigkoo.pickerview.builder.OptionsPickerBuilder;
 import com.bigkoo.pickerview.view.OptionsPickerView;
 import com.cqu.mealtime.R;
-import com.cqu.mealtime.Stall;
+import com.cqu.mealtime.entity.Stall;
 import com.cqu.mealtime.UploadActivity;
 import com.cqu.mealtime.databinding.FragmentDashboardBinding;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
@@ -202,7 +201,7 @@ public class DashboardFragment extends Fragment {
             DashboardData.stalls.clear();
             for (int i = 0; i < jsonArray.length(); i++) {
                 jsonObject = jsonArray.getJSONObject(i);
-                DashboardData.stalls.add(new Stall(jsonObject.getString("stallName"), jsonObject.getInt("tyId"), jsonObject.getInt("stallNum"), jsonObject.getInt("canId"), jsonObject.getInt("locId"),jsonObject.getInt("peopleCount")));
+                DashboardData.stalls.add(new Stall(jsonObject.getString("stallName"), jsonObject.getInt("tyId"), jsonObject.getInt("stallNum"), jsonObject.getInt("canId"), jsonObject.getInt("locId"),jsonObject.getDouble("peopleCount")));
             }
             toastMsg = "获取档口信息成功";
             Message msg = new Message();

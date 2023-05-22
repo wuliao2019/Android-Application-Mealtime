@@ -29,7 +29,6 @@ public class CustomizationFragment extends Fragment {
 
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         CustomizationViewModel notificationsViewModel = new ViewModelProvider(this).get(CustomizationViewModel.class);
-
         binding = FragmentCustomizationBinding.inflate(inflater, container, false);
         View root = binding.getRoot();
         TextView t1 = binding.nameArea, t2 = binding.idArea, t3 = binding.mapNumArea;

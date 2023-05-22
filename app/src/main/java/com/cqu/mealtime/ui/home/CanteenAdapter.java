@@ -9,7 +9,7 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.cqu.mealtime.Canteen;
+import com.cqu.mealtime.entity.Canteen;
 import com.cqu.mealtime.R;
 import com.cqu.mealtime.util.UtilKt;
 
