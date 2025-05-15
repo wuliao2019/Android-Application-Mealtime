@@ -4,5 +4,5 @@
     <string name="title_dashboard">档口</string>
     <string name="title_notifications">论坛</string>
     <string name="title_customization">我的</string>
-    <string name="server_url">http://1.14.46.81:8088/</string>
+    <string name="server_url">http://api.cquwmy.xyz/mealtimeServer/</string>
 </resources>
